@@ -7,6 +7,7 @@
 <title>Client portal · Junto Nova</title>
 <link rel="icon" type="image/png" sizes="32x32" href="https://juntonova.com/favicon-32.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{--charcoal:#1a1a1a;--ember:#c45c26;--muted:#64748b;--border:#e2e8f0;--surface:#f8fafc;--ok:#166534;--ok-bg:#ecfdf3;--warn:#92400e;--warn-bg:#fff7ed}
 *{box-sizing:border-box}html,body{margin:0}
@@ -39,30 +40,33 @@ td{padding:.85rem .4rem;border-bottom:1px solid var(--border);vertical-align:top
 .pill{display:inline-block;font-size:.72rem;font-weight:600;padding:.2rem .5rem;border-radius:999px;background:var(--surface);color:var(--muted)}
 .pill.open{background:var(--warn-bg);color:var(--warn)}
 .pill.paid{background:var(--ok-bg);color:var(--ok)}
-.btn{display:inline-flex;padding:.55rem .95rem;border-radius:.7rem;font-size:.875rem;font-weight:500;border:1px solid var(--charcoal);background:var(--charcoal);color:#fff;cursor:pointer;font-family:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.55rem .95rem;border-radius:.7rem;font-size:.875rem;font-weight:500;border:1px solid var(--charcoal);background:var(--charcoal);color:#fff;cursor:pointer;font-family:inherit}
 .btn.ghost{background:transparent;color:var(--charcoal);border-color:var(--border)}
+.btn.google{width:100%;background:#fff;color:var(--charcoal);border-color:var(--border);padding:.7rem 1rem}
+.btn.google:hover{background:var(--surface)}
 .login-shell{min-height:70vh;display:grid;place-items:center}
 .login-card{width:min(24rem,100%)}
-label{display:block;font-size:.8rem;font-weight:600;margin:.85rem 0 .35rem}
-input{width:100%;padding:.65rem .75rem;border:1px solid var(--border);border-radius:.7rem;font:inherit}
-.accounts{margin-top:1.1rem;font-size:.8rem;color:var(--muted);line-height:1.6}
-.accounts code{font-size:.75rem;background:var(--surface);padding:.05rem .3rem;border-radius:.3rem}
 .err{color:#9f1239;background:#fff1f2;border-radius:.6rem;padding:.6rem .75rem;font-size:.85rem;margin-bottom:.75rem}
 .file-meta{font-size:.8rem;color:var(--muted)}
+.preview-bar{background:#fff7ed;color:#92400e;font-size:.8rem;text-align:center;padding:.45rem 1rem}
+.preview-bar button{background:none;border:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
 footer{border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}
 footer .row{display:flex;justify-content:space-between;gap:1rem;padding:1.5rem 0;flex-wrap:wrap}
+#google-btn{display:flex;justify-content:center;min-height:44px}
 </style>
 </head>
 <body>
 <div class="bar">STAGING</div>
+<div id="preview-host"></div>
 <div id="app"></div>
 <script>
+const GOOGLE_CLIENT_ID="";
 const ORGS={"org-northstar":"Northstar Foundation","org-oak":"Oak & Iron Housing"};
 const USERS=[
-  {id:"user-andrew",email:"andrew@juntonova.com",password:"dev-admin",name:"Andrew Clark",role:"admin",orgId:null,permissions:["billing"]},
-  {id:"user-maya",email:"maya@northstar.example",password:"dev-billing",name:"Maya Chen",role:"director",orgId:"org-northstar",permissions:["billing"]},
-  {id:"user-robert",email:"robert@northstar.example",password:"dev-board",name:"Robert Hale",role:"board",orgId:"org-northstar",permissions:[]},
-  {id:"user-elena",email:"elena@oakandiron.example",password:"dev-member",name:"Elena Voss",role:"director",orgId:"org-oak",permissions:[]}
+  {id:"user-andrew",email:"andrew@juntonova.com",name:"Andrew Clark",role:"admin",orgId:null,permissions:["billing"]},
+  {id:"user-maya",email:"maya@northstar.example",name:"Maya Chen",role:"director",orgId:"org-northstar",permissions:["billing"]},
+  {id:"user-robert",email:"robert@northstar.example",name:"Robert Hale",role:"board",orgId:"org-northstar",permissions:[]},
+  {id:"user-elena",email:"elena@oakandiron.example",name:"Elena Voss",role:"director",orgId:"org-oak",permissions:[]}
 ];
 const FILES=[
   {orgId:null,title:"How we work together",kind:"guide",visibility:"clients",named:[]},
@@ -102,11 +106,84 @@ function canSeeFile(u,f){
   return false;
 }
 function canSeeActivity(u,a){if(a.visibility==="clients")return true;if(isAdmin(u))return true;return a.orgId&&a.orgId===u.orgId}
+function isPreviewing(){return sessionStorage.getItem("jn_portal_preview")==="1"}
 function current(){const raw=USERS.find(u=>u.id===sessionStorage.getItem("jn_portal_user"));return raw?{...raw,orgName:raw.orgId?ORGS[raw.orgId]:null}:null}
 let view="home",loginError="";
 function go(n){view=n;render()}
-function logout(){sessionStorage.removeItem("jn_portal_user");view="home";render()}
-function login(e){e.preventDefault();const found=USERS.find(u=>u.email===e.target.email.value.trim().toLowerCase()&&u.password===e.target.password.value);if(!found){loginError="Email or password did not match.";render();return}sessionStorage.setItem("jn_portal_user",found.id);loginError="";view="home";render()}
+function logout(){
+  sessionStorage.removeItem("jn_portal_user");
+  sessionStorage.removeItem("jn_portal_preview");
+  sessionStorage.removeItem("jn_portal_real");
+  sessionStorage.removeItem("jn_portal_google");
+  view="home";
+  render();
+}
+function parseJwt(token){
+  const payload=token.split(".")[1];
+  const json=atob(payload.replace(/-/g,"+").replace(/_/g,"/"));
+  return JSON.parse(decodeURIComponent(Array.from(json).map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join("")));
+}
+function onGoogle(response){
+  try{
+    const p=parseJwt(response.credential);
+    const email=String(p.email||"").toLowerCase();
+    if(!p.email_verified){loginError="Google did not verify that email.";render();return}
+    const found=USERS.find(u=>u.email===email);
+    if(!found){
+      loginError="This Google account isn't invited. Ask Junto Nova to add you.";
+      render();
+      return;
+    }
+    sessionStorage.setItem("jn_portal_user",found.id);
+    sessionStorage.setItem("jn_portal_real",found.id);
+    sessionStorage.setItem("jn_portal_google",JSON.stringify({email,name:p.name||found.name,picture:p.picture||""}));
+    sessionStorage.removeItem("jn_portal_preview");
+    loginError="";
+    view="home";
+    render();
+  }catch(e){
+    loginError="Google sign-in failed. Try again.";
+    render();
+  }
+}
+function initGoogle(){
+  if(!window.google||!window.google.accounts||!GOOGLE_CLIENT_ID)return;
+  const el=document.getElementById("google-btn");
+  if(!el)return;
+  window.google.accounts.id.initialize({
+    client_id:GOOGLE_CLIENT_ID,
+    callback:onGoogle,
+    ux_mode:"popup",
+    auto_select:false,
+    context:"signin",
+    itp_support:true
+  });
+  window.google.accounts.id.renderButton(el,{
+    theme:"outline",
+    size:"large",
+    text:"signin_with",
+    shape:"rectangular",
+    logo_alignment:"left",
+    width:320
+  });
+}
+function previewAs(id){
+  const real=sessionStorage.getItem("jn_portal_real");
+  if(!real)return;
+  const admin=USERS.find(u=>u.id===real);
+  if(!admin||admin.role!=="admin")return;
+  sessionStorage.setItem("jn_portal_user",id);
+  sessionStorage.setItem("jn_portal_preview","1");
+  view="home";
+  render();
+}
+function exitPreview(){
+  const real=sessionStorage.getItem("jn_portal_real");
+  if(real)sessionStorage.setItem("jn_portal_user",real);
+  sessionStorage.removeItem("jn_portal_preview");
+  view="admin";
+  render();
+}
 function layout(user,active,body){
   const nav=user?`<nav class="tabs">
     <button class="${active==="home"?"active":""}" onclick="go('home')">Home</button>
@@ -131,18 +208,10 @@ function page(user){
   if(!user) return layout(null,"",`<div class="login-shell"><div class="login-card card">
     <div class="kicker">Client portal</div>
     <h1 class="display" style="font-size:1.8rem">Sign in</h1>
+    <p class="muted" style="margin:0 0 1.1rem">Invite only. Use the Google account Junto Nova invited.</p>
     ${loginError?`<div class="err">${loginError}</div>`:""}
-    <form onsubmit="login(event)">
-      <label>Email</label><input name="email" type="email" required>
-      <label>Password</label><input name="password" type="password" required>
-      <div style="margin-top:1rem"><button class="btn" type="submit">Sign in</button></div>
-    </form>
-    <div class="accounts">
-      <div><code>andrew@juntonova.com</code> / <code>dev-admin</code></div>
-      <div><code>maya@northstar.example</code> / <code>dev-billing</code></div>
-      <div><code>robert@northstar.example</code> / <code>dev-board</code></div>
-      <div><code>elena@oakandiron.example</code> / <code>dev-member</code></div>
-    </div>
+    <div id="google-btn"></div>
+    ${GOOGLE_CLIENT_ID?"":`<p class="muted" style="margin-top:1rem;font-size:.8rem">Google sign-in is being connected for this staging site.</p>`}
   </div></div>`);
   const visible=FILES.filter(f=>canSeeFile(user,f));
   const work=visible.filter(f=>f.visibility!=="clients");
@@ -156,7 +225,8 @@ function page(user){
   }
   if(view==="admin"){
     if(!isAdmin(user)) return layout(user,"home","");
-    return layout(user,"admin",`<div class="kicker">Junto Nova</div><h1 class="display">Admin</h1><div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Name</th><th>Role</th><th>Permissions</th><th>Org</th></tr></thead><tbody>${USERS.map(u=>`<tr><td>${u.name}<div class="file-meta">${u.email}</div></td><td>${roleLabel(u.role)}</td><td class="muted">${(u.permissions||[]).join(", ")||"—"}</td><td class="muted">${u.orgId?ORGS[u.orgId]:"—"}</td></tr>`).join("")}</tbody></table></div>`);
+    const people=USERS.map(u=>`<tr><td>${u.name}<div class="file-meta">${u.email}</div></td><td>${roleLabel(u.role)}</td><td class="muted">${(u.permissions||[]).join(", ")||"—"}</td><td class="muted">${u.orgId?ORGS[u.orgId]:"—"}</td><td>${u.role==="admin"?"":`<button class="btn ghost" onclick="previewAs('${u.id}')">Preview</button>`}</td></tr>`).join("");
+    return layout(user,"admin",`<div class="kicker">Junto Nova</div><h1 class="display">Admin</h1><p class="muted">Invited people. Preview walks the portal as that person without a separate login.</p><div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Name</th><th>Role</th><th>Permissions</th><th>Org</th><th></th></tr></thead><tbody>${people}</tbody></table></div>`);
   }
   const feed=ACTIVITY.filter(a=>canSeeActivity(user,a)).sort((a,b)=>a.at<b.at?1:-1).map(a=>`<tr><td><b>${a.title}</b></td><td><span class="pill">${visLabel(a.visibility)}</span></td><td class="muted">${a.at}</td></tr>`).join("");
   return layout(user,"home",`
@@ -168,7 +238,15 @@ function page(user){
     </div>
     <div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Latest</th><th>Audience</th><th>Date</th></tr></thead><tbody>${feed}</tbody></table></div>`);
 }
-function render(){document.getElementById("app").innerHTML=page(current())}
+function render(){
+  const host=document.getElementById("preview-host");
+  host.innerHTML=isPreviewing()?`<div class="preview-bar">Previewing as ${current()?current().name:""} · <button onclick="exitPreview()">Back to your account</button></div>`:"";
+  document.getElementById("app").innerHTML=page(current());
+  if(!current()){
+    if(window.google&&window.google.accounts) initGoogle();
+    else window.addEventListener("load",initGoogle,{once:true});
+  }
+}
 render();
 </script>
 </body>
