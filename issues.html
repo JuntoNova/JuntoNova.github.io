@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Issues · Junto Nova</title>
+<link rel="icon" type="image/png" sizes="32x32" href="https://juntonova.com/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://juntonova.com/favicon-180.png">
+<meta name="description" content="Where today's proposals sit: practical, structural, and cultural.">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap');
+:root{--charcoal:#1A1A1A;--ember:#C45C26;--muted:#64748B;--border:#E2E8F0;--surface:#F8FAFC}
+body{font-family:Inter,system-ui,sans-serif;color:var(--charcoal);background:#fff}
+.display{font-family:'Playfair Display',Georgia,serif;font-weight:700;letter-spacing:-0.02em}
+#mobile-menu{display:none}#mobile-menu.open{display:block}
+select.issue-select{height:2.75rem;padding:0 2.5rem 0 1rem;line-height:2.75rem}
+input.issue-search{height:2.75rem;padding:0 2.5rem;line-height:2.75rem;width:100%}
+</style>
+</head>
+<body>
+<div style="background:#1A1A1A;color:#fff;font-size:11px;letter-spacing:.08em;text-align:center;padding:6px 12px">STAGING</div>
+<header class="border-b relative" style="border-color:var(--border);background:#fff">
+<div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+<a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition" style="color:var(--charcoal)"><img src="https://juntonova.com/jn-header.png" alt="Junto Nova" width="40" height="46" style="display:block" /><span class="display text-2xl tracking-tight">JUNTO NOVA</span></a>
+<div class="relative">
+<button id="menu-toggle" onclick="toggleMenu()" class="p-2 -mr-2 focus:outline-none" style="color:var(--muted)" aria-label="Open menu">
+<svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+<svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+<div id="mobile-menu" class="absolute top-full right-0 mt-2 w-72 rounded-xl border shadow-lg z-50" style="background:#fff;border-color:var(--border)">
+<div class="px-2 py-2 flex flex-col gap-0.5">
+<a href="index.html#about" class="text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">About Us</a>
+<a href="index.html#costs" class="text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Cost Drivers</a>
+<a href="index.html#share" class="text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Your Share</a>
+<a href="project.html" class="text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Let's work together</a>
+<a href="issues.html" class="text-left py-3 px-2 rounded-lg hover:bg-slate-50 font-medium" style="color:var(--charcoal)">Issues</a>
+<a href="portal.html" class="text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Client login</a>
+</div></div></div></div></header>
+
+<main class="max-w-5xl mx-auto px-6 pt-6 pb-16">
+<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+<label class="relative block w-full max-w-xs">
+<span class="sr-only">Issue</span>
+<select id="area" class="issue-select w-full appearance-none rounded-xl border bg-white text-base font-medium" style="border-color:var(--border)"></select>
+<svg class="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" style="color:var(--muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+</label>
+<div id="lenses" class="flex flex-wrap items-center gap-2"></div>
+</div>
+<div class="relative mt-3">
+<svg class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style="color:var(--muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>
+<input id="q" class="issue-search rounded-xl border bg-white" style="border-color:var(--border)" placeholder="Find a proposal or belief" autocomplete="off" spellcheck="false" aria-label="Find a proposal or belief">
+<button id="clear" type="button" class="absolute top-1/2 right-2 hidden h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full" style="color:var(--muted)" aria-label="Clear search">×</button>
+<ul id="hits" class="absolute z-30 mt-1 hidden max-h-72 w-full overflow-auto rounded-xl border bg-white py-1 shadow-lg" style="border-color:var(--border)"></ul>
+</div>
+<div class="mt-3">
+<div id="bar" class="flex h-1.5 overflow-hidden rounded-full"></div>
+<div class="mt-1.5 flex items-baseline justify-between gap-4">
+<div class="text-[10px] tracking-wide" style="color:var(--muted)">Weaker leverage → stronger</div>
+<p id="caption" class="text-right text-xs" style="color:var(--muted)"></p>
+</div>
+</div>
+<div id="matrix" class="mt-5"></div>
+<article id="detail" class="mt-6 rounded-2xl border bg-white p-5 md:p-6" style="border-color:var(--border)"></article>
+</main>
+
+<footer class="border-t" style="border-color:var(--border)">
+<div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm" style="color:var(--muted)">
+<div><div class="display text-lg" style="color:var(--charcoal)">JUNTO NOVA</div><div class="text-xs mt-1">Junto Nova LLC · Dallas, TX</div></div>
+<div class="flex items-center gap-5">
+<a href="mailto:andrew@juntonova.com" class="hover:opacity-70">Email</a>
+<a href="https://x.com/jandrewclark" target="_blank" rel="noopener" class="hover:opacity-70">X</a>
+<a href="https://juntonova.substack.com" target="_blank" rel="noopener" class="hover:opacity-70">Substack</a>
+<a href="involved.html">Get Involved</a><a href="privacy.html">Privacy</a><span>© 2026</span>
+</div></div></footer>
+<script>
+const DATA = {"areas":[{"id":"ai","name":"Artificial Intelligence","practical":[{"id":"permit-dc","name":"Shot-clock data-center permits","y":40,"x":50,"summary":"Days-to-permit is a published number. Miss the clock and the campus is deemed approved."},{"id":"dc-power","name":"Behind-the-meter power for data centers","y":70,"x":45,"summary":"A campus may generate and consume on site without joining a five-year interconnection queue."},{"id":"grid-ai","name":"Co-locate compute with stranded generation","y":50,"x":40,"summary":"Put training next to nuclear, gas, and hydro that currently cannot find a buyer."},{"id":"power-metric","name":"Published watts-per-token and queue time","y":25,"x":55,"summary":"Interconnection wait, dollars per megawatt, and energy per unit of compute on a public dashboard."},{"id":"cooling","name":"Standard for heat reuse and water use","y":30,"x":48,"summary":"A published materials standard so a campus can reuse heat instead of inventing a custom permit."}],"structural":[{"id":"sandbox-ai","name":"State AI regulatory sandbox","y":45,"x":55,"summary":"New products run under a published waiver while the statute catches up."},{"id":"open-weight","name":"Safe-harbor for open-weight models","y":60,"x":30,"summary":"Publishing a model is not a licensed activity. Liability stays on misuse, not on weights."},{"id":"chip-neutrality","name":"End industrial policy that picks chip winners","y":55,"x":15,"summary":"No subsidy stack that inflates costs for everyone not in the bill."},{"id":"license-lab","name":"Reject a federal lab-licensing regime","y":75,"x":25,"summary":"Training is not a utility franchise. No license that only incumbents can hold."},{"id":"utility-ai","name":"Keep AI off the utility model","y":65,"x":30,"summary":"Do not let the electric franchise become a compute franchise."},{"id":"liability","name":"Misuse liability, not pre-approval","y":50,"x":35,"summary":"Harm is punished after the fact. Shipping is not a federal permission."},{"id":"data","name":"Clear, cheap rules for training data","y":45,"x":22,"summary":"A statutory safe harbor for publicly available data, with an opt-out that is actually operable."}],"cultural":[{"id":"a1","name":"More intelligence should make ordinary life cheaper","y":82,"x":70,"summary":""},{"id":"a2","name":"Labs should compete; no one lab should need a license to train","y":68,"x":48,"summary":""},{"id":"a3","name":"Power and compute ought to be abundant, not rationed","y":80,"x":58,"summary":""},{"id":"a4","name":"Builders should ship; boards should not set the pace","y":72,"x":44,"summary":""},{"id":"a5","name":"Existential risk justifies pausing frontier training","y":24,"x":48,"summary":""},{"id":"a6","name":"Only licensed labs should be allowed to train large models","y":20,"x":32,"summary":""},{"id":"a7","name":"Equity of access outranks getting the tools into the world","y":15,"x":38,"summary":""},{"id":"a8","name":"A public body should decide who is allowed to build","y":18,"x":26,"summary":""}]},{"id":"education","name":"Education","practical":[{"id":"transparency","name":"Published cost-per-seat","y":25,"x":55,"summary":"Every school posts fully loaded cost per pupil next to outcomes, on a clock."},{"id":"course-choice","name":"Course-level purchasing","y":45,"x":50,"summary":"A student can buy algebra from one provider and shop from another without leaving a home base."},{"id":"micro","name":"Microschool and homeschool co-op code","y":50,"x":45,"summary":"A light, statewide standard so a 12–60 student school can exist in ordinary space."},{"id":"open-clock","name":"Days-to-open a school, published","y":30,"x":48,"summary":"Time from filing to first student is a public number with a statutory cap."},{"id":"materials","name":"Open instructional-materials standard","y":20,"x":60,"summary":"Curriculum and tools meet a published bar and can be swapped without a district adoption war."}],"structural":[{"id":"esa","name":"Universal education savings accounts","y":75,"x":40,"summary":"Every child gets a portable account that can buy a seat, a course, a tutor, or a tool."},{"id":"follow","name":"Funding follows the child, not the zip code","y":80,"x":28,"summary":"Assignment by geography ends. The dollar is attached to the student."},{"id":"charter-cap","name":"Lift charter and private caps","y":55,"x":35,"summary":"No numeric cap, no local veto on a school that meets a published bar."},{"id":"cert","name":"Open the classroom to proven talent","y":40,"x":30,"summary":"Subject experts teach without a traditional certification gauntlet."},{"id":"authorizer","name":"Statewide authorizers","y":50,"x":38,"summary":"A school can be authorized by the state, a university, or a mayor — not only by the incumbent district."},{"id":"bargain","name":"Reset collective bargaining scope","y":60,"x":12,"summary":"Staffing ratios, calendars, and dismissal are management questions again."},{"id":"higher-ed-aid","name":"End open-ended higher-ed subsidies","y":70,"x":10,"summary":"Stop inflating tuition with uncapped loans and tax credits that schools capture."}],"cultural":[{"id":"ed1","name":"Parents should choose the school, not the zip code","y":84,"x":72,"summary":""},{"id":"ed2","name":"A year of learning ought to get cheaper over time","y":70,"x":54,"summary":""},{"id":"ed3","name":"New operators should be easy to open if families want them","y":68,"x":46,"summary":""},{"id":"ed4","name":"Teachers are professionals; the district is not a sacred form","y":58,"x":42,"summary":""},{"id":"ed5","name":"The common public school is civic glue and should be protected","y":24,"x":66,"summary":""},{"id":"ed6","name":"Professionals, not parents, should set the program","y":18,"x":32,"summary":""},{"id":"ed7","name":"Choice drains resources from the students who stay","y":20,"x":40,"summary":""},{"id":"ed8","name":"Equity requires a single assignment system","y":15,"x":28,"summary":""}]},{"id":"energy","name":"Energy","practical":[{"id":"queue-clock","name":"Interconnection shot-clock","y":45,"x":50,"summary":"A published number of days to interconnect. Miss the clock and the project is deemed approved."},{"id":"unbundle-bill","name":"Posted, unbundled kilowatt-hour","y":30,"x":55,"summary":"The bill shows generation, wires, and riders as separate numbers a household can actually read."},{"id":"tou","name":"Real-time and time-of-use pricing","y":40,"x":45,"summary":"The existing meter starts sending a real price. Scarcity shows up as a number, not a blackout."},{"id":"spur","name":"Generator pays the spur, not the rate base","y":35,"x":40,"summary":"The new plant or campus pays for the line that serves it instead of socializing it across every bill."},{"id":"smr","name":"New category for small nuclear","y":80,"x":15,"summary":"Treat small modular reactors as a standards class, not a miniature gigawatt plant."},{"id":"meter","name":"Open metering and data-access standard","y":25,"x":60,"summary":"The meter is a published standard. Customers and rivals can read the same data the utility reads."},{"id":"reserve","name":"Published reserve-margin and outage metrics","y":20,"x":65,"summary":"Capacity, outages, and interconnection wait times sit on a public dashboard, updated on a clock."}],"structural":[{"id":"territory","name":"Eliminate service territories","y":80,"x":5,"summary":"End the exclusive franchise that gives one utility every customer in a geography."},{"id":"ror","name":"End guaranteed rate of return","y":50,"x":5,"summary":"Stop paying a regulated return on capital whether or not the plant was needed."},{"id":"rofr","name":"Eliminate right of first refusal","y":10,"x":25,"summary":"The incumbent may not take a transmission project without a bid."},{"id":"private-grids","name":"Private grids","y":75,"x":40,"summary":"Campuses, parks, and new communities may own and operate their own wires and generation."},{"id":"ercot","name":"State grid supremacy (ERCOT)","y":50,"x":10,"summary":"Keep the bulk of a state's grid inside state jurisdiction rather than FERC interstate markets."},{"id":"bans","name":"Eliminate bans on energy production","y":70,"x":5,"summary":"Repeal moratoria on nuclear, natural gas, and other dispatchable generation."},{"id":"subsidies","name":"Eliminate all energy subsidies","y":80,"x":5,"summary":"Strip production and investment credits from every fuel and technology."},{"id":"sandbox","name":"Regulatory sandbox","y":40,"x":55,"summary":"New models run under a time-boxed waiver instead of waiting for a full rewrite of utility law."},{"id":"unbundle","name":"Unbundle generation from wires","y":72,"x":22,"summary":"Where a monopoly remains, it is wires-only. Generation competes."},{"id":"purpose-utility","name":"Change the purpose of the utility","y":85,"x":8,"summary":"The franchise exists to deliver abundant cheap power, not to protect a rate base."}],"cultural":[{"id":"e1","name":"Abundant energy fuels prosperity","y":88,"x":76,"summary":""},{"id":"e2","name":"Innovation and human flourishing matter more than rationing","y":72,"x":68,"summary":""},{"id":"e3","name":"Individual liberty and property rights include the right to generate","y":74,"x":58,"summary":""},{"id":"e4","name":"Voluntary exchange should set who builds and who buys power","y":52,"x":44,"summary":""},{"id":"e5","name":"Protect wildlife even if power costs more","y":16,"x":62,"summary":""},{"id":"e6","name":"Conservation first — consumption is risky","y":20,"x":48,"summary":""},{"id":"e7","name":"Energy policy should prioritize social justice and equity","y":14,"x":36,"summary":""},{"id":"e8","name":"Top-down precaution is the responsible way to add new supply","y":18,"x":28,"summary":""}]},{"id":"healthcare","name":"Healthcare","practical":[{"id":"waits","name":"Published wait-time and outcome metrics","y":25,"x":58,"summary":"Days to appointment, complication rates, and readmits sit on a public dashboard."},{"id":"prior-auth","name":"Prior-auth shot-clock","y":30,"x":50,"summary":"A published number of hours to approve or deny. Silence is approval."},{"id":"generic","name":"Generic and biosimilar substitution standard","y":35,"x":48,"summary":"A published standard: if a cheaper equivalent exists, it is the default."},{"id":"dpc","name":"Direct primary care as a listed fee","y":35,"x":55,"summary":"A monthly relationship with a doctor is a posted number, not a rogue insurance product."},{"id":"claims","name":"Claims-cycle time, published","y":20,"x":52,"summary":"Days from service to payment is a public number with a statutory cap."}],"structural":[{"id":"price","name":"Real price transparency with cash default","y":45,"x":50,"summary":"Every shoppable service has a posted cash price that is the real price."},{"id":"con","name":"Repeal certificate of need","y":55,"x":30,"summary":"A new clinic, MRI, or maternity ward does not need permission from its competitor."},{"id":"site","name":"Site-neutral payments","y":50,"x":35,"summary":"The same procedure pays the same in a hospital outpatient department or a clinic."},{"id":"pbm","name":"PBM spread-pricing ban and pass-through","y":40,"x":45,"summary":"Middlemen cannot keep a spread between what they charge the plan and pay the pharmacy."},{"id":"scope","name":"Full practice for qualified clinicians","y":40,"x":40,"summary":"Nurse practitioners, pharmacists, and specialists practice at the top of their training."},{"id":"interstate","name":"Interstate license compact, automatic","y":50,"x":38,"summary":"A clean license in one state is a clean license in all."},{"id":"third-party","name":"Catastrophic-first insurance","y":75,"x":12,"summary":"Insurance covers rare, large losses. Everyday care is a cash market with a savings account."},{"id":"mandate","name":"Repeal benefit mandates","y":55,"x":15,"summary":"Plans may be thin, catastrophic, and cheap."}],"cultural":[{"id":"c1","name":"I should be able to see and pay a real price","y":86,"x":80,"summary":""},{"id":"c2","name":"Clinicians should be free to practice across state lines","y":60,"x":64,"summary":""},{"id":"c3","name":"Insurance is for catastrophes, not for every visit","y":72,"x":46,"summary":""},{"id":"c4","name":"Hospitals should compete the way any other service does","y":70,"x":52,"summary":""},{"id":"c5","name":"Care is a right the system should assign","y":22,"x":58,"summary":""},{"id":"c6","name":"Networks and licenses are how patients stay safe","y":25,"x":50,"summary":""},{"id":"c7","name":"Someone else — employer, plan, or state — should pay","y":18,"x":56,"summary":""},{"id":"c8","name":"Consolidation is how quality is managed","y":12,"x":26,"summary":""}]},{"id":"housing","name":"Housing","practical":[{"id":"deadlines","name":"Hard permit deadlines","y":40,"x":50,"summary":"Days-to-permit is a published number. Miss the clock and the project is deemed approved."},{"id":"factory","name":"Factory-built housing code","y":55,"x":35,"summary":"A statewide standard so a modular unit can be sited without a custom local inspection fight."},{"id":"fees","name":"Posted fee schedule, capped","y":30,"x":45,"summary":"Impact fees, tap fees, and school fees sit on one public schedule with a statutory cap."},{"id":"convert","name":"Office-to-residential building standard","y":45,"x":40,"summary":"A published conversion standard so stranded commercial space can become units without a custom fight."},{"id":"inspection","name":"Single inspection standard","y":25,"x":55,"summary":"One checklist, one visit, a published pass/fail. No sequential mystery inspections."},{"id":"taps","name":"Water and sewer capacity as a published flow","y":35,"x":38,"summary":"Available taps, remaining capacity, and the price of a new connection are on a dashboard."}],"structural":[{"id":"adu","name":"By-right accessory dwellings","y":35,"x":60,"summary":"A second unit on an existing lot is a right, not a hearing."},{"id":"parking","name":"End parking minimums","y":30,"x":45,"summary":"The code may not force every new unit to buy two off-street spaces."},{"id":"by-right-mf","name":"By-right multifamily near jobs","y":70,"x":20,"summary":"Apartments and stacked flats are allowed as of right on commercial and transit corridors."},{"id":"inclusion","name":"Repeal inclusionary mandates","y":40,"x":15,"summary":"Stop taxing new market units to cross-subsidize a handful of below-market ones."},{"id":"preempt","name":"State preemption of local zoning","y":80,"x":18,"summary":"The state sets a housing floor. Cities may be more open, not more closed."},{"id":"veto","name":"End discretionary design review","y":50,"x":28,"summary":"Objective standards replace hearings. Neighbors may comment; they may not kill the project."},{"id":"single-family-default","name":"End single-family default zoning","y":75,"x":12,"summary":"Duplexes, fourplexes, and small apartments are legal on every residential lot."},{"id":"nepa-state","name":"Reform state environmental review","y":60,"x":25,"summary":"A checklist with a clock, not a veto for anyone who can hire a lawyer."}],"cultural":[{"id":"h1","name":"More homes are how rents come down","y":84,"x":70,"summary":""},{"id":"h2","name":"A family should be able to own a stake, not just rent one","y":86,"x":80,"summary":""},{"id":"h3","name":"Property rights include the right to add a unit","y":76,"x":46,"summary":""},{"id":"h4","name":"Cities should be judged on housing production","y":60,"x":42,"summary":""},{"id":"h5","name":"Neighborhood character should constrain new building","y":22,"x":64,"summary":""},{"id":"h6","name":"Growth must be planned and paced by local government","y":28,"x":50,"summary":""},{"id":"h7","name":"Housing is a right the state should assign, not a product","y":24,"x":38,"summary":""},{"id":"h8","name":"Incumbent residents deserve a veto over new neighbors","y":18,"x":32,"summary":""}]},{"id":"social-security","name":"Social Security","practical":[{"id":"fica-stub","name":"Show both halves of FICA on the stub","y":20,"x":70,"summary":"Employee and employer payroll sit next to the wage as one number."},{"id":"lifetime-statement","name":"Lifetime paid versus present value of benefits","y":35,"x":55,"summary":"The annual statement shows cash in, expected cash out, and the gap, in today's dollars."},{"id":"trust-dashboard","name":"Published exhaustion date and implicit tax","y":25,"x":60,"summary":"Trust-fund run-out, replacement rate, and the tax already implied, on a public clock."},{"id":"open-pia","name":"Open AIME and PIA standard","y":20,"x":50,"summary":"Bend points, averaging, and the primary insurance amount are a published formula anyone can recompute."},{"id":"cola-standard","name":"COLA as a posted standard, not an annual fight","y":30,"x":40,"summary":"The index, the lag, and the cap are a published materials rule, not a December surprise."},{"id":"claim-time","name":"Published days-to-award and error rate","y":15,"x":65,"summary":"Time to a first check, and how often the award is wrong, sit on a dashboard."}],"structural":[{"id":"personal-accounts","name":"Worker-owned accounts","y":85,"x":10,"summary":"A defined share of the contribution is property, with a balance, a beneficiary, and a residual."},{"id":"opt-out","name":"Opt-out for new entrants","y":80,"x":8,"summary":"New workers may replace the program with a published private or state alternative."},{"id":"longevity-age","name":"Index full retirement age to longevity","y":50,"x":25,"summary":"The age moves on a published schedule as life expectancy moves."},{"id":"purpose-ss","name":"Change the purpose of the program","y":75,"x":10,"summary":"Longevity and disability insurance, not a political transfer dressed as a pension."},{"id":"unified-budget","name":"Take Social Security off the unified budget","y":40,"x":20,"summary":"Surplus payroll cannot cover general spending. The trust fund is not a second checking account."},{"id":"formula-lock","name":"Lock the formula; recertify on a shot-clock","y":55,"x":18,"summary":"Benefits and rates change only on a published calendar, not by silent inflation or a December bill."},{"id":"wage-cap","name":"Treat an uncapped payroll tax as a tax","y":45,"x":22,"summary":"If the wage base is lifted, it is income tax, not 'insurance,' and it is voted that way."}],"cultural":[{"id":"s1","name":"The contribution is the worker's money","y":84,"x":72,"summary":""},{"id":"s2","name":"An account you can own beats a political promise","y":78,"x":50,"summary":""},{"id":"s3","name":"Work longer and save privately are legitimate answers","y":70,"x":46,"summary":""},{"id":"s4","name":"A formula you can recompute is the only honest benefit","y":50,"x":44,"summary":""},{"id":"s5","name":"It is an earned benefit, not a balance","y":26,"x":70,"summary":""},{"id":"s6","name":"The compact across generations should not be reopened","y":20,"x":62,"summary":""},{"id":"s7","name":"A public floor is a right the state must keep","y":24,"x":50,"summary":""},{"id":"s8","name":"Solidarity outranks individual ownership of the contribution","y":16,"x":34,"summary":""}]},{"id":"taxes","name":"Taxes","practical":[{"id":"brackets","name":"Flatten and lower visible rates","y":55,"x":20,"summary":"Fewer brackets, lower top and middle rates, fewer phase-outs."},{"id":"payroll-visible","name":"Show the employer payroll tax on the stub","y":20,"x":60,"summary":"The hidden half of payroll appears next to the wage, as a number."},{"id":"file-simple","name":"One-page default return","y":30,"x":40,"summary":"Wage earners file on a postcard unless they opt into complexity."},{"id":"property-cap","name":"Property-tax growth cap with a lock","y":40,"x":45,"summary":"Local levies cannot outrun a published number without a vote."},{"id":"compliance-time","name":"Published hours-to-file","y":15,"x":58,"summary":"Average household hours spent on the return, next to the refund, every year."}],"structural":[{"id":"consumption","name":"Shift the federal base toward consumption","y":80,"x":8,"summary":"Tax what is spent, not what is built. Work and saving cease to be the target."},{"id":"credits-out","name":"Convert the code from a spending bill to a tax bill","y":70,"x":10,"summary":"Social policy leaves the 1040 and becomes an on-budget program, or ends."},{"id":"gross-receipts","name":"Repeal gross-receipts and turnover taxes","y":45,"x":30,"summary":"Stop taxing revenue before profit, which stacks into prices."},{"id":"state-comp","name":"Protect state tax competition","y":40,"x":35,"summary":"No federal cap that punishes states for having a low-rate model."},{"id":"local-auth","name":"Require a vote for new local authorities","y":35,"x":40,"summary":"Special districts, TIF, and authorities cannot levy without the people who pay."},{"id":"ss-honest","name":"Honest accounting of payroll entitlements","y":65,"x":12,"summary":"Treat Social Security and Medicare cashflows as the household liabilities they are."},{"id":"stepup","name":"Keep basis step-up; kill double tax on death","y":25,"x":35,"summary":"A family business or house is not a second taxable event at the funeral."}],"cultural":[{"id":"x1","name":"A household should keep more of what it earns","y":90,"x":84,"summary":""},{"id":"x2","name":"Work, saving, and building should not be punished","y":82,"x":74,"summary":""},{"id":"x3","name":"The bill should be simple enough to understand","y":52,"x":70,"summary":""},{"id":"x4","name":"States should be allowed to compete on tax","y":58,"x":46,"summary":""},{"id":"x5","name":"The code should correct unfairness even if it is complex","y":22,"x":48,"summary":""},{"id":"x6","name":"High earners exist primarily to fund the rest","y":20,"x":36,"summary":""},{"id":"x7","name":"National uniformity beats fifty experiments","y":18,"x":30,"summary":""},{"id":"x8","name":"If the goal is good, the rate can be hidden","y":12,"x":22,"summary":""}]},{"id":"transportation","name":"Transportation","practical":[{"id":"insurance","name":"Usage-based insurance as default option","y":30,"x":55,"summary":"Pay for the miles and the risk you actually take."},{"id":"parking-t","name":"Priced curb, published occupancy","y":35,"x":42,"summary":"The curb is a number: occupancy, price, turnover, on a dashboard."},{"id":"nea","name":"NEPA clocks on highway and rail repairs","y":45,"x":28,"summary":"Days of review for work on existing rights-of-way is a published cap."},{"id":"trip-time","name":"Published corridor trip times","y":20,"x":60,"summary":"Peak minutes on the routes people actually use, updated on a clock."},{"id":"fuel-metric","name":"Cost-per-mile, posted by fuel and mode","y":25,"x":50,"summary":"A household can see the all-in cost of a mile: fuel, insurance, fare, delay."}],"structural":[{"id":"fuel","name":"Repeal fuel-type mandates","y":50,"x":25,"summary":"No EV quota, no fuel ban. The cheapest reliable mile wins."},{"id":"occupancy","name":"Right-size occupancy and taxi rules","y":40,"x":40,"summary":"Vans, jitneys, and independent drivers may serve thin routes without a medallion."},{"id":"autonomy","name":"Statewide AV sandbox","y":65,"x":30,"summary":"A single state rule set so autonomous fleets can run without a city-by-city veto."},{"id":"transit-monopoly","name":"End exclusive transit franchises","y":70,"x":15,"summary":"Cities may run a service; they may not forbid competitors on the same corridor."},{"id":"user-pays","name":"User-pays roads with surplus rebated","y":60,"x":18,"summary":"Roads are paid by users. Surplus goes back to households, not into an expanding program."},{"id":"faa","name":"Open low-altitude and small-air markets","y":55,"x":20,"summary":"Air taxis, cargo drones, and small fields get a permission structure measured in months."},{"id":"labor-t","name":"Repeal transit work-rules that pad headcount","y":50,"x":10,"summary":"Operators staff to the schedule, not to a 1970s run-cut."}],"cultural":[{"id":"t1","name":"Time stuck in transit is money taken from a family","y":86,"x":82,"summary":""},{"id":"t2","name":"A car is a tool of freedom, not a moral failing","y":78,"x":70,"summary":""},{"id":"t3","name":"New operators should be easy to try on a public street","y":56,"x":44,"summary":""},{"id":"t4","name":"Energy for movement should be abundant and cheap","y":80,"x":62,"summary":""},{"id":"t5","name":"Driving should be discouraged for the climate","y":16,"x":50,"summary":""},{"id":"t6","name":"Mode share is a goal the city should enforce","y":18,"x":30,"summary":""},{"id":"t7","name":"The street belongs to the plan, not the trip you need today","y":14,"x":26,"summary":""},{"id":"t8","name":"Precaution about new vehicles outranks getting there","y":20,"x":34,"summary":""}]}]};
+const LENSES = [
+  { id: "practical", label: "Practical", caption: "Metrics, materials, and standards.", color: "#F97316" },
+  { id: "structural", label: "Structural", caption: "Rules, incentives, and power.", color: "#DC2626" },
+  { id: "cultural", label: "Cultural", caption: "Goals, beliefs, and values.", color: "#7F1D1D" },
+];
+const MATRIX = {
+  practical: {
+    x: "In use →", y: "High performance →", xp: "In use", yp: "Performance",
+    quads: [
+      ["High performance", "Little use", "top-3 left-3 text-left"],
+      ["High performance", "In use", "top-3 right-3 text-right"],
+      ["Low performance", "Little use", "bottom-3 left-3 text-left"],
+      ["Low performance", "In use", "bottom-3 right-3 text-right"],
+    ],
+  },
+  structural: {
+    x: "Likely to pass →", y: "Drives down costs and improves quality →", xp: "Likely to pass", yp: "Cost & quality",
+    quads: [
+      ["Long-term campaigns", "Hard to pass, high impact", "top-3 left-3 text-left"],
+      ["Focus here", "Likely to pass, high impact", "top-3 right-3 text-right"],
+      ["Ignore these", "Hard to pass, little impact", "bottom-3 left-3 text-left"],
+      ["Short-term campaigns", "Likely to pass, little impact", "bottom-3 right-3 text-right"],
+    ],
+  },
+  cultural: {
+    x: "Already held →", y: "Drives change →", xp: "Already held", yp: "Drives change",
+    quads: [
+      ["Shift", "Drives change. Not yet held.", "top-3 left-3 text-left"],
+      ["Mobilize", "Drives change. Already held.", "top-3 right-3 text-right"],
+      ["Noise", "Doesn't move the bill.", "bottom-3 left-3 text-left"],
+      ["Cheap talk", "Held until the price shows up.", "bottom-3 right-3 text-right"],
+    ],
+  },
+};
+function theory(item, lens) {
+  if (lens !== "cultural") return item.summary;
+  const drives = item.y >= 50, held = item.x >= 50;
+  if (drives && held) return "Already held. This is not a persuasion problem. Mobilize the people who already believe this into bills, take-up, and votes.";
+  if (drives && !held) return "This would drive real change if more people held it. The work is shifting opinion, not turnout.";
+  if (!drives && held) return "Held until the price shows up. People will say they want this until the bill arrives — then they don't. Cheap talk, not leverage.";
+  return "Neither widely held nor a driver of the bill. Interesting. Not leverage.";
+}
+function fold(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); }
+function areaBy(id) { return DATA.areas.find((a) => a.id === id) || DATA.areas[0]; }
+function items(area, lens) { return area[lens]; }
+function spread(list) {
+  const pts = list.map((p) => ({ id: p.id, x: p.x, y: p.y }));
+  for (let pass = 0; pass < 4; pass++) {
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = 0; j < i; j++) {
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        const d = Math.hypot(dx, dy) || 0.2;
+        if (d >= 8) continue;
+        const push = (8 - d) / 2;
+        pts[i].x += (dx / d) * push; pts[i].y += (dy / d) * push;
+        pts[j].x -= (dx / d) * push; pts[j].y -= (dy / d) * push;
+      }
+    }
+  }
+  const out = {};
+  pts.forEach((p) => { out[p.id] = { x: Math.min(97, Math.max(3, p.x)), y: Math.min(97, Math.max(3, p.y)) }; });
+  return out;
+}
+const params = new URLSearchParams(location.search);
+let areaId = DATA.areas.some((a) => a.id === params.get("area")) ? params.get("area") : "energy";
+let lens = LENSES.some((l) => l.id === params.get("lens")) ? params.get("lens") : "practical";
+let selected = null;
+let query = "";
+let openHits = false;
+let activeHit = 0;
+
+const areaEl = document.getElementById("area");
+const lensesEl = document.getElementById("lenses");
+const qEl = document.getElementById("q");
+const hitsEl = document.getElementById("hits");
+const clearEl = document.getElementById("clear");
+
+DATA.areas.forEach((a) => {
+  const o = document.createElement("option");
+  o.value = a.id; o.textContent = a.name;
+  areaEl.appendChild(o);
+});
+LENSES.forEach((l) => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.dataset.lens = l.id;
+  b.textContent = l.label;
+  b.className = "rounded-full border px-4 py-2 text-sm font-medium";
+  b.onclick = () => { lens = l.id; selected = null; sync(); };
+  lensesEl.appendChild(b);
+});
+areaEl.onchange = () => { areaId = areaEl.value; selected = null; sync(); };
+qEl.oninput = () => { query = qEl.value; openHits = true; activeHit = 0; renderHits(); paintMatrix(); };
+qEl.onfocus = () => { openHits = true; renderHits(); };
+qEl.onkeydown = (e) => {
+  const hits = search();
+  if (e.key === "ArrowDown") { e.preventDefault(); openHits = true; activeHit = Math.min(activeHit + 1, Math.max(hits.length - 1, 0)); renderHits(); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); activeHit = Math.max(activeHit - 1, 0); renderHits(); }
+  else if (e.key === "Enter" && openHits && hits[activeHit]) { e.preventDefault(); pick(hits[activeHit]); }
+  else if (e.key === "Escape") { openHits = false; renderHits(); }
+};
+clearEl.onclick = () => { query = ""; qEl.value = ""; openHits = false; renderHits(); paintMatrix(); };
+document.addEventListener("mousedown", (e) => {
+  if (!qEl.parentElement.contains(e.target)) { openHits = false; renderHits(); }
+  if (!document.getElementById("menu-toggle").parentElement.contains(e.target)) closeMenu();
+});
+
+function catalog() {
+  const rows = [];
+  DATA.areas.forEach((a) => LENSES.forEach((l) => items(a, l.id).forEach((p) => rows.push({ area: a, lens: l.id, item: p }))));
+  return rows;
+}
+const CATALOG = catalog();
+function search() {
+  const tokens = fold(query).split(" ").filter(Boolean);
+  if (!tokens.length) return [];
+  return CATALOG.map((row) => {
+    const name = fold(row.item.name);
+    const hay = name + " " + fold(row.item.summary) + " " + fold(row.area.name);
+    if (!tokens.every((t) => hay.includes(t))) return null;
+    let score = 0;
+    const joined = tokens.join(" ");
+    if (name.includes(joined)) score += 80;
+    if (name.startsWith(joined)) score += 40;
+    if (row.area.id === areaId) score += 25;
+    if (row.lens === lens) score += 10;
+    return { row, score };
+  }).filter(Boolean).sort((a, b) => b.score - a.score || a.row.item.name.localeCompare(b.row.item.name)).slice(0, 8).map((r) => r.row);
+}
+function pick(row) {
+  areaId = row.area.id;
+  lens = row.lens;
+  selected = row.item.id;
+  query = row.item.name;
+  qEl.value = query;
+  openHits = false;
+  sync();
+}
+function renderHits() {
+  const hits = search();
+  clearEl.classList.toggle("hidden", !query);
+  clearEl.classList.toggle("flex", !!query);
+  if (!openHits || !fold(query)) { hitsEl.classList.add("hidden"); hitsEl.innerHTML = ""; return; }
+  hitsEl.classList.remove("hidden");
+  if (!hits.length) { hitsEl.innerHTML = '<li class="px-3 py-2.5 text-sm" style="color:var(--muted)">Nothing matches.</li>'; return; }
+  hitsEl.innerHTML = hits.map((row, i) => {
+    const label = LENSES.find((l) => l.id === row.lens).label + (row.area.id !== areaId ? " · " + row.area.name : "");
+    return '<li><button type="button" data-i="' + i + '" class="flex w-full flex-col items-start gap-0.5 px-3 py-2.5 text-left ' + (i === activeHit ? "bg-slate-50" : "") + '"><span class="text-sm font-medium">' + esc(row.item.name) + '</span><span class="text-[11px] tracking-wide" style="color:var(--muted)">' + esc(label) + "</span></button></li>";
+  }).join("");
+  hitsEl.querySelectorAll("button").forEach((b) => {
+    b.onmouseenter = () => { activeHit = Number(b.dataset.i); };
+    b.onclick = () => pick(hits[Number(b.dataset.i)]);
+  });
+}
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, (c) => c === "&" ? "\u0026amp;" : c === "<" ? "\u0026lt;" : c === ">" ? "\u0026gt;" : "\u0026quot;");
+}
+function sync() {
+  const url = new URL(location.href);
+  url.searchParams.set("area", areaId);
+  url.searchParams.set("lens", lens);
+  history.replaceState(null, "", url);
+  areaEl.value = areaId;
+  document.querySelectorAll("#lenses button").forEach((b) => {
+    const on = b.dataset.lens === lens;
+    b.style.background = on ? "#1A1A1A" : "#fff";
+    b.style.color = on ? "#fff" : "#64748B";
+    b.style.borderColor = on ? "#1A1A1A" : "#E2E8F0";
+  });
+  const bar = document.getElementById("bar");
+  bar.innerHTML = LENSES.map((l) => '<div class="h-full flex-1" style="background:' + l.color + (l.id === lens ? "" : "40") + '"></div>').join("");
+  document.getElementById("caption").textContent = LENSES.find((l) => l.id === lens).caption;
+  const list = items(areaBy(areaId), lens);
+  if (!selected || !list.some((p) => p.id === selected)) selected = list[0] ? list[0].id : null;
+  renderHits();
+  paintMatrix();
+  paintDetail();
+}
+function paintMatrix() {
+  const area = areaBy(areaId);
+  const list = items(area, lens);
+  const cfg = MATRIX[lens];
+  const pos = spread(list);
+  const tokens = fold(query);
+  const matchIds = tokens ? new Set(search().filter((r) => r.area.id === areaId && r.lens === lens).map((r) => r.item.id)) : null;
+  const quads = cfg.quads.map((q) => '<div class="pointer-events-none absolute z-0 max-w-36 ' + q[2] + '"><div class="text-xs font-semibold" style="color:rgba(26,26,26,.55)">' + esc(q[0]) + '</div><div class="text-[11px] leading-snug" style="color:var(--muted)">' + esc(q[1]) + "</div></div>").join("");
+  const dots = list.map((p) => {
+    const place = pos[p.id];
+    const on = p.id === selected;
+    const matched = matchIds ? matchIds.has(p.id) : false;
+    const dim = matchIds && matchIds.size > 0 && !matched && !on;
+    const show = on || (matched && matchIds.size <= 4);
+    const side = place.x > 58 ? "right:1.25rem" : "left:1.25rem";
+    return '<button type="button" data-id="' + esc(p.id) + '" class="absolute flex -translate-x-1/2 translate-y-1/2 items-center" style="left:' + place.x + "%;bottom:" + place.y + "%;opacity:" + (dim ? ".25" : "1") + ";z-index:" + (on || matched ? 20 : 10) + '" aria-label="' + esc(p.name) + '"><span class="block h-3.5 w-3.5 rounded-full border-2" style="border-color:' + (on || matched ? "var(--ember)" : "var(--charcoal)") + ";background:" + (on ? "var(--ember)" : matched ? "rgba(196,92,38,.3)" : "#fff") + '"></span>' + (show ? '<span class="absolute top-1/2 max-w-52 -translate-y-1/2 rounded-md bg-white/95 px-1.5 py-0.5 text-xs leading-snug ' + (on ? "font-semibold" : "font-medium") + '" style="' + side + ";color:" + (on ? "var(--ember)" : "var(--charcoal)") + '">' + esc(p.name) + "</span>" : "") + "</button>";
+  }).join("");
+  document.getElementById("matrix").innerHTML =
+    '<div class="flex items-end gap-3"><div class="hidden max-w-8 pb-10 text-xs font-medium sm:block" style="writing-mode:vertical-rl;transform:rotate(180deg);color:var(--muted)">' + esc(cfg.y) + '</div>' +
+    '<div class="relative min-h-80 w-full flex-1 overflow-hidden rounded-2xl border sm:min-h-[28rem]" style="border-color:var(--border);background:var(--surface)">' + quads +
+    '<div class="pointer-events-none absolute inset-y-10 left-1/2 w-px" style="background:var(--border)"></div><div class="pointer-events-none absolute inset-x-10 top-1/2 h-px" style="background:var(--border)"></div>' +
+    '<div class="absolute inset-10">' + dots + "</div></div></div>" +
+    '<div class="mt-2 flex justify-end"><span class="text-xs font-medium" style="color:var(--muted)">' + esc(cfg.x) + "</span></div>";
+  document.querySelectorAll("#matrix button").forEach((b) => { b.onclick = () => { selected = b.dataset.id; paintMatrix(); paintDetail(); }; });
+}
+function paintDetail() {
+  const area = areaBy(areaId);
+  const item = items(area, lens).find((p) => p.id === selected);
+  const cfg = MATRIX[lens];
+  const el = document.getElementById("detail");
+  if (!item) { el.innerHTML = ""; return; }
+  el.innerHTML =
+    '<h2 class="display text-2xl">' + esc(item.name) + "</h2>" +
+    '<div class="mt-3 flex flex-wrap gap-2"><span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs" style="background:var(--surface);color:var(--muted)">' + esc(cfg.yp) + ' <span class="font-semibold" style="color:var(--ember)">' + item.y + '%</span></span>' +
+    '<span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs" style="background:var(--surface);color:var(--muted)">' + esc(cfg.xp) + ' <span class="font-semibold" style="color:var(--ember)">' + item.x + '%</span></span></div>' +
+    '<div class="mt-5"><div class="text-[11px] tracking-widest uppercase" style="color:var(--muted)">Theory</div><p class="mt-2 text-sm leading-relaxed" style="color:var(--muted)">' + esc(theory(item, lens)) + "</p></div>" +
+    '<div class="mt-5 border-t pt-5" style="border-color:var(--border)"><div class="text-[11px] tracking-widest uppercase" style="color:var(--muted)">Confidence</div>' +
+    '<div class="mt-2 flex items-center gap-3"><span class="inline-flex gap-1">' + [1,2,3,4,5].map((n) => '<span class="h-2 w-5 rounded-sm" style="background:' + (n <= 1 ? "var(--ember)" : "var(--border)") + '"></span>').join("") + '</span><span class="text-sm font-medium">Low</span></div>' +
+    '<p class="mt-2 text-sm leading-relaxed" style="color:var(--muted)">Assumption. Not market data. The coordinates are a sketch until they are replaced by polling, take-up, and price series.</p>' +
+    '<a href="project.html" class="mt-4 inline-flex rounded-xl px-5 py-2.5 text-sm font-medium text-white" style="background:var(--charcoal)">Let\'s work together</a></div>';
+}
+function toggleMenu() {
+  const m = document.getElementById("mobile-menu");
+  const open = m.classList.toggle("open");
+  document.getElementById("menu-icon").classList.toggle("hidden", open);
+  document.getElementById("close-icon").classList.toggle("hidden", !open);
+}
+function closeMenu() {
+  document.getElementById("mobile-menu").classList.remove("open");
+  document.getElementById("menu-icon").classList.remove("hidden");
+  document.getElementById("close-icon").classList.add("hidden");
+}
+sync();
+</script>
+</body>
+</html>
