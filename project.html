@@ -65,18 +65,35 @@
             outline: 2px solid var(--charcoal);
             outline-offset: 1px;
         }
+        #mobile-menu{display:none}
+        #mobile-menu.open{display:block}
     </style>
 </head>
 <body>
 <div style="background:#1A1A1A;color:#fff;font-size:11px;letter-spacing:.08em;text-align:center;padding:6px 12px">STAGING</div>
 
-    <header class="border-b" style="border-color: var(--border); background: #fff;">
+    <header class="border-b relative" style="border-color: var(--border); background: #fff;">
         <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition" style="color: var(--charcoal);">
                 <img src="https://juntonova.com/jn-header.png" alt="Junto Nova" width="40" height="46" style="display:block" />
                 <span class="display text-2xl tracking-tight">JUNTO NOVA</span>
             </a>
-            <a href="index.html" class="text-sm hover:opacity-70" style="color: var(--muted);">← Back</a>
+            <div class="relative">
+                <button id="menu-toggle" onclick="toggleMenu()" class="p-2 -mr-2 focus:outline-none" style="color: var(--muted);" aria-label="Open menu">
+                    <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <div id="mobile-menu" class="absolute top-full right-0 mt-2 w-72 rounded-xl border shadow-lg z-50" style="background:#fff;border-color:var(--border)">
+                    <div class="px-2 py-2 flex flex-col gap-0.5">
+                        <a href="index.html#about" onclick="closeMenu()" class="block text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">About Us</a>
+                        <a href="index.html#costs" onclick="closeMenu()" class="block text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Cost Drivers</a>
+                        <a href="index.html#share" onclick="closeMenu()" class="block text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Your Share</a>
+                        <a href="project.html" class="block text-left py-3 px-2 rounded-lg font-medium" style="background:var(--surface);color:var(--charcoal)">Let's work together</a>
+                        <a href="issues.html" class="block text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Issues</a>
+                        <a href="portal.html" class="block text-left py-3 px-2 rounded-lg hover:bg-slate-50" style="color:var(--charcoal)">Client login</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -179,6 +196,24 @@
             const match = Array.from(sel.options).find(function (o) { return o.value === q; });
             if (match) sel.value = q;
         })();
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const open = menu.classList.toggle('open');
+            document.getElementById('menu-icon').classList.toggle('hidden', open);
+            document.getElementById('close-icon').classList.toggle('hidden', !open);
+        }
+        function closeMenu() {
+            document.getElementById('mobile-menu').classList.remove('open');
+            document.getElementById('menu-icon').classList.remove('hidden');
+            document.getElementById('close-icon').classList.add('hidden');
+        }
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('mobile-menu');
+            const button = document.getElementById('menu-toggle');
+            if (!menu || !menu.classList.contains('open')) return;
+            if (menu.contains(event.target) || button.contains(event.target)) return;
+            closeMenu();
+        });
     </script>
 </body>
 </html>
