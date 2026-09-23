@@ -251,11 +251,11 @@ function exitPreview(){
   const real=sessionStorage.getItem("jn_portal_real");
   if(real)sessionStorage.setItem("jn_portal_user",real);
   sessionStorage.removeItem("jn_portal_preview");
-  view="library";
+  view="admin";
   render();
 }
 function clientsOnly(){return USERS.filter(u=>!isStaff(u))}
-function editClient(id){editingId=id;formError="";view="library";render()}
+function editClient(id){editingId=id;formError="";view="admin";render()}
 function cancelEdit(){editingId="";formError="";render()}
 function saveClient(event){
   event.preventDefault();
@@ -291,7 +291,7 @@ function saveClient(event){
   saveDirectory();
   editingId="";
   formError="";
-  view="library";
+  view="admin";
   render();
   return false;
 }
