@@ -56,7 +56,8 @@ td{padding:.85rem .4rem;border-bottom:1px solid var(--border);vertical-align:top
 .err{color:#9f1239;background:#fff1f2;border-radius:.6rem;padding:.6rem .75rem;font-size:.85rem;margin-bottom:.75rem}
 .form{display:grid;gap:.75rem;margin:1rem 0 1.25rem}
 .form label{display:grid;gap:.3rem;font-size:.8rem;color:var(--muted)}
-.form input,.form select{border:1px solid var(--border);border-radius:.7rem;padding:.65rem .8rem;font:inherit;color:var(--charcoal);background:#fff}
+.form input,.form select,.form textarea{border:1px solid var(--border);border-radius:.7rem;padding:.65rem .8rem;font:inherit;color:var(--charcoal);background:#fff;width:100%}
+.form input[type=file]{padding:.45rem .6rem}
 .form .row2{display:grid;gap:.75rem;grid-template-columns:1fr 1fr}
 @media(max-width:640px){.form .row2{grid-template-columns:1fr}}
 .check{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:var(--charcoal)}
@@ -222,8 +223,8 @@ function addForm(section) {
   if (!room.staff) return "";
   const orgs = Object.keys(room.orgs || {}).map(function (id) {
     return '<option value="' + esc(id) + '">' + esc(room.orgs[id]) + "</option>";
-  }).join("");
-  return '<form class="form" onsubmit="saveDoc(event,\'' + section + '\')"><div class="kicker">Add a document</div><label>Title<input id="d-title" required></label><label>Who can see it<select id="d-vis"><option value="org">This organization</option><option value="director">Director</option><option value="board">Board</option><option value="billing">Billing</option><option value="clients">All clients</option></select></label><label>Organization<select id="d-org">' + orgs + '</select></label><label>Note<textarea id="d-body"></textarea></label><button class="btn" type="submit">Save document</button></form>';
+  }).join("") + '<option value="new">New organization</option>';
+  return '<form class="form" onsubmit="saveDoc(event,\'' + section + '\')"><div class="kicker">Add a document</div><label>Title<input id="d-title" required></label><label>File<input id="d-file" type="file"></label><label>Who can see it<select id="d-vis" onchange="document.getElementById(\'d-org-wrap\').hidden=this.value===\'clients\'"><option value="clients">All clients</option><option value="org">This organization</option><option value="director">Director</option><option value="board">Board</option><option value="billing">Billing</option></select></label><div id="d-org-wrap" hidden><label>Organization<select id="d-org">' + orgs + '</select></label><label>New organization name<input id="d-org-name" placeholder="Only if you chose New organization"></label></div><label>Note<textarea id="d-body" rows="4"></textarea></label><button class="btn" type="submit">Save document</button></form>';
 }
 function page() {
   if (!token) {
@@ -248,7 +249,13 @@ function page() {
     const titles = { proposals: "Proposals", research: "Research", billing: "Billing" };
     main = '<div class="kicker">' + esc(org) + '</div><h1 class="display">' + titles[view] + "</h1>" + docTable(view) + addForm(view);
   }
-  if (reading) main += '<article class="card" style="margin-top:1rem"><h2 class="display" style="font-size:1.4rem">' + esc(reading.title) + "</h2><p class=\"muted\" style=\"white-space:pre-wrap\">" + esc(reading.body) + "</p></article>";
+  if (reading) {
+    var download = "";
+    if (reading.contentB64) {
+      download = '<p style="margin-top:.75rem"><a class="btn" download="' + esc(reading.filename || "document") + '" href="data:' + esc(reading.mime || "application/octet-stream") + ";base64," + reading.contentB64 + '">Download</a></p>';
+    }
+    main += '<article class="card" style="margin-top:1rem"><h2 class="display" style="font-size:1.4rem">' + esc(reading.title) + "</h2><p class=\"muted\" style=\"white-space:pre-wrap\">" + esc(reading.body) + "</p>" + download + "</article>";
+  }
   return '<div class="portal-tools"><div class="wrap row"><nav class="tabs">' + nav() + '</nav><div class="who"><b>' + esc(room.person.name) + '</b><br>' + esc(room.person.email) + ' · <button onclick="logout()">Sign out</button></div></div></div><main class="wrap">' + (error ? '<div class="err">' + esc(error) + "</div>" : "") + main + "</main>";
 }
 function card(label, n, id) {
@@ -291,16 +298,52 @@ async function removePerson(id) {
 }
 async function saveDoc(event, section) {
   event.preventDefault();
-  const data = await api({
-    action: "saveDocument",
-    title: document.getElementById("d-title").value,
-    section: section,
-    visibility: document.getElementById("d-vis").value,
-    orgId: document.getElementById("d-org") ? document.getElementById("d-org").value : null,
-    body: document.getElementById("d-body").value,
-  });
-  if (data.error) { error = data.error; render(); return; }
-  room = data; error = ""; render();
+  const fileEl = document.getElementById("d-file");
+  const file = fileEl && fileEl.files ? fileEl.files[0] : null;
+  let contentB64 = "";
+  let filename = null;
+  let mime = null;
+  if (file) {
+    if (file.size > 2.4 * 1024 * 1024) {
+      error = "That file is too large. Keep it under 2 megabytes.";
+      render();
+      return;
+    }
+    contentB64 = await new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const raw = String(reader.result || "");
+        const cut = raw.indexOf(",");
+        resolve(cut >= 0 ? raw.slice(cut + 1) : raw);
+      };
+      reader.onerror = function () { reject(new Error("Couldn't read that file.")); };
+      reader.readAsDataURL(file);
+    });
+    filename = file.name;
+    mime = file.type || "application/octet-stream";
+  }
+  try {
+    const data = await api({
+      action: "saveDocument",
+      title: document.getElementById("d-title").value,
+      section: section,
+      visibility: document.getElementById("d-vis").value,
+      orgId: document.getElementById("d-org") ? document.getElementById("d-org").value : "new",
+      orgName: document.getElementById("d-org-name") ? document.getElementById("d-org-name").value : "",
+      body: document.getElementById("d-body").value,
+      contentB64: contentB64,
+      filename: filename,
+      mime: mime,
+    });
+    if (data.error) { error = data.error; render(); return; }
+    room = data;
+    error = "";
+    reading = null;
+    render();
+  } catch (e) {
+    error = e.message || "Couldn't save that.";
+    render();
+  }
 }
 async function openDoc(id) {
   const data = await api({ action: "open", id: id });
