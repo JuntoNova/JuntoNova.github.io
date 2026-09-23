@@ -85,7 +85,7 @@ const LENSES = [
 ];
 const MATRIX = {
   practical: {
-    x: "Used often →", y: "High performance →", xp: "Used often", yp: "Performance",
+    yh: "High performing", yl: "Low performing", xl: "Not useful", xh: "Used often", xp: "Used often", yp: "Performance",
     quads: [
       ["Find a use", "Performs. Rarely used.", "top-3 left-3 text-left"],
       ["Double down", "Performs. Used often.", "top-3 right-3 text-right"],
@@ -94,7 +94,7 @@ const MATRIX = {
     ],
   },
   structural: {
-    x: "Likely to pass →", y: "Drives down costs and improves quality →", xp: "Likely to pass", yp: "Cost & quality",
+    yh: "High impact", yl: "Little impact", xl: "Hard to pass", xh: "Likely to pass", xp: "Likely to pass", yp: "Cost & quality",
     quads: [
       ["Long-term campaigns", "Hard to pass, high impact", "top-3 left-3 text-left"],
       ["Focus here", "Likely to pass, high impact", "top-3 right-3 text-right"],
@@ -103,7 +103,7 @@ const MATRIX = {
     ],
   },
   cultural: {
-    x: "Already held →", y: "Drives change →", xp: "Already held", yp: "Drives change",
+    yh: "Drives change", yl: "Doesn't drive change", xl: "Not yet held", xh: "Already held", xp: "Already held", yp: "Drives change",
     quads: [
       ["Shift", "Drives change. Not yet held.", "top-3 left-3 text-left"],
       ["Mobilize", "Drives change. Already held.", "top-3 right-3 text-right"],
@@ -274,11 +274,11 @@ function paintMatrix() {
     return '<button type="button" data-id="' + esc(p.id) + '" class="absolute flex -translate-x-1/2 translate-y-1/2 items-center" style="left:' + place.x + "%;bottom:" + place.y + "%;opacity:" + (dim ? ".25" : "1") + ";z-index:" + (on || matched ? 20 : 10) + '" aria-label="' + esc(p.name) + '"><span class="block h-3.5 w-3.5 rounded-full border-2" style="border-color:' + (on || matched ? "var(--ember)" : "var(--charcoal)") + ";background:" + (on ? "var(--ember)" : matched ? "rgba(196,92,38,.3)" : "#fff") + '"></span>' + (show ? '<span class="absolute top-1/2 max-w-52 -translate-y-1/2 rounded-md bg-white/95 px-1.5 py-0.5 text-xs leading-snug ' + (on ? "font-semibold" : "font-medium") + '" style="' + side + ";color:" + (on ? "var(--ember)" : "var(--charcoal)") + '">' + esc(p.name) + "</span>" : "") + "</button>";
   }).join("");
   document.getElementById("matrix").innerHTML =
-    '<div class="flex items-end gap-3"><div class="hidden max-w-8 pb-10 text-xs font-medium sm:block" style="writing-mode:vertical-rl;transform:rotate(180deg);color:var(--muted)">' + esc(cfg.y) + '</div>' +
+    '<div class="flex items-stretch gap-2 sm:gap-3"><div class="flex w-24 shrink-0 flex-col text-right text-[11px] font-medium leading-tight sm:w-28 sm:text-xs" style="color:var(--muted)"><div class="flex flex-1 items-center justify-end">' + esc(cfg.yh) + '</div><div class="flex flex-1 items-center justify-end">' + esc(cfg.yl) + "</div></div>" +
     '<div class="relative min-h-80 w-full flex-1 overflow-hidden rounded-2xl border sm:min-h-[28rem]" style="border-color:var(--border);background:var(--surface)">' + quads +
     '<div class="pointer-events-none absolute inset-y-10 left-1/2 w-px" style="background:var(--border)"></div><div class="pointer-events-none absolute inset-x-10 top-1/2 h-px" style="background:var(--border)"></div>' +
     '<div class="absolute inset-10">' + dots + "</div></div></div>" +
-    '<div class="mt-2 flex justify-end"><span class="text-xs font-medium" style="color:var(--muted)">' + esc(cfg.x) + "</span></div>";
+    '<div class="mt-2 flex gap-2 sm:gap-3"><div class="w-24 shrink-0 sm:w-28"></div><div class="flex min-w-0 flex-1 justify-between gap-3 text-[11px] font-medium sm:text-xs" style="color:var(--muted)"><span>' + esc(cfg.xl) + "</span><span>" + esc(cfg.xh) + "</span></div></div>";
   document.querySelectorAll("#matrix button").forEach((b) => { b.onclick = () => { selected = b.dataset.id; paintMatrix(); paintDetail(); }; });
 }
 function paintDetail() {
