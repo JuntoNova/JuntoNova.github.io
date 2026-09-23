@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://accounts.google.com/gsi/client" async onload="window.onGsi && window.onGsi()"></script>
 <style>
 :root{--charcoal:#1a1a1a;--ember:#c45c26;--muted:#64748b;--border:#e2e8f0;--surface:#f8fafc;--ok:#166534;--ok-bg:#ecfdf3;--warn:#92400e;--warn-bg:#fff7ed}
 *{box-sizing:border-box}html,body{margin:0}
@@ -156,10 +156,40 @@ function onGoogle(response) {
   refresh().then(render).catch(function (e) { error = e.message; render(); });
 }
 function initGoogle() {
-  if (!window.google || !document.getElementById("google-btn")) return;
-  window.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: onGoogle, ux_mode: "popup", auto_select: false });
-  window.google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "outline", size: "large", width: 320 });
+  var host = document.getElementById("google-btn");
+  if (!host || host.dataset.ready === "1") return;
+  if (!window.google || !window.google.accounts || !window.google.accounts.id) return;
+  var width = Math.max(200, Math.min(320, (host.parentElement ? host.parentElement.clientWidth : 320) - 8));
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: onGoogle,
+    ux_mode: "popup",
+    auto_select: false,
+    context: "signin",
+    itp_support: true,
+  });
+  window.google.accounts.id.renderButton(host, {
+    theme: "outline",
+    size: "large",
+    text: "signin_with",
+    shape: "rectangular",
+    logo_alignment: "left",
+    width: width,
+  });
+  host.dataset.ready = "1";
+  var fallback = document.getElementById("google-fallback");
+  if (fallback) fallback.hidden = true;
 }
+function signInGoogle() {
+  if (!window.google || !window.google.accounts) {
+    error = "Sign-in is still loading. Try again in a second.";
+    render();
+    return;
+  }
+  initGoogle();
+  window.google.accounts.id.prompt();
+}
+window.onGsi = initGoogle;
 function docs(section) {
   return (room.documents || []).filter(function (doc) { return doc.section === section; });
 }
@@ -197,7 +227,7 @@ function addForm(section) {
 }
 function page() {
   if (!token) {
-    return '<main class="wrap"><div class="login-shell"><div class="login-card card"><div class="kicker">Client portal</div><h1 class="display" style="font-size:1.8rem">Sign in</h1><p class="muted">Use the Google account you were given.</p>' + (error ? '<div class="err">' + esc(error) + "</div>" : "") + '<div id="google-btn"></div></div></div></main>';
+    return '<main class="wrap"><div class="login-shell"><div class="login-card card"><div class="kicker">Client portal</div><h1 class="display" style="font-size:1.8rem">Sign in</h1><p class="muted">Use the Google account you were given.</p>' + (error ? '<div class="err">' + esc(error) + "</div>" : "") + '<div id="google-btn"></div><button type="button" class="btn google" id="google-fallback" onclick="signInGoogle()">Sign in with Google</button></div></div></main>';
   }
   if (!room) {
     return '<main class="wrap"><div class="login-card card"><h1 class="display" style="font-size:1.8rem">This account isn\'t on the list</h1><p class="muted">' + esc(error || "Ask Junto Nova to add this Google account.") + '</p><button class="btn ghost" onclick="logout()">Sign out</button></div></main>';
@@ -304,11 +334,19 @@ document.addEventListener("click", function (event) {
 });
 window.toggleMenu = toggleMenu;
 window.closeMenu = closeMenu;
+window.signInGoogle = signInGoogle;
 function boot() {
   if (!token) { render(); return; }
   refresh().then(render).catch(function () { error = "The portal can't be reached. Try again."; token = ""; render(); });
 }
 boot();
+var gsiTries = 0;
+var gsiTimer = setInterval(function () {
+  var host = document.getElementById("google-btn");
+  if (host && host.dataset.ready === "1") { clearInterval(gsiTimer); return; }
+  initGoogle();
+  if (++gsiTries > 40) clearInterval(gsiTimer);
+}, 250);
 
 </script>
 </body>
