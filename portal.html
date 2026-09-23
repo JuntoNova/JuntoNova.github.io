@@ -54,6 +54,12 @@ td{padding:.85rem .4rem;border-bottom:1px solid var(--border);vertical-align:top
 .login-shell{min-height:70vh;display:grid;place-items:center}
 .login-card{width:min(24rem,100%)}
 .err{color:#9f1239;background:#fff1f2;border-radius:.6rem;padding:.6rem .75rem;font-size:.85rem;margin-bottom:.75rem}
+.form{display:grid;gap:.75rem;margin:1rem 0 1.25rem}
+.form label{display:grid;gap:.3rem;font-size:.8rem;color:var(--muted)}
+.form input,.form select{border:1px solid var(--border);border-radius:.7rem;padding:.65rem .8rem;font:inherit;color:var(--charcoal);background:#fff}
+.form .row2{display:grid;gap:.75rem;grid-template-columns:1fr 1fr}
+@media(max-width:640px){.form .row2{grid-template-columns:1fr}}
+.check{display:flex;align-items:center;gap:.5rem;font-size:.9rem;color:var(--charcoal)}
 .file-meta{font-size:.8rem;color:var(--muted)}
 .preview-bar{background:#fff7ed;color:#92400e;font-size:.8rem;text-align:center;padding:.45rem 1rem}
 .preview-bar button{background:none;border:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer}
@@ -126,9 +132,29 @@ const INVOICES=[
   {orgId:"org-northstar",number:"JN-1004",title:"Public-opinion package",amount:"$9,200",due:"2026-08-14",status:"paid"},
   {orgId:"org-oak",number:"JN-1011",title:"Capital structure + partner map",amount:"$24,000",due:"2026-10-10",status:"open"}
 ];
-function isAdmin(u){return u&&u.role==="admin"}
-function canBill(u){return isAdmin(u)||(u.permissions||[]).includes("billing")}
-function roleLabel(r){return {admin:"Junto Nova",director:"Director",board:"Board",member:"Staff"}[r]||r}
+(function loadDirectory(){
+  try{
+    const saved=JSON.parse(localStorage.getItem("jn_portal_directory")||"null");
+    if(!saved||!Array.isArray(saved.users)||!saved.orgs)return;
+    Object.keys(ORGS).forEach((k)=>delete ORGS[k]);
+    Object.assign(ORGS,saved.orgs);
+    USERS.splice(0,USERS.length,...saved.users);
+    if(!USERS.some((u)=>u.email==="andrew@juntonova.com")){
+      USERS.unshift({id:"user-andrew",email:"andrew@juntonova.com",name:"Andrew Clark",role:"admin",orgId:null,permissions:["billing"]});
+    }
+  }catch(e){}
+})();
+function saveDirectory(){localStorage.setItem("jn_portal_directory",JSON.stringify({orgs:ORGS,users:USERS}))}
+function isStaff(u){return !!(u&&(u.role==="admin"||u.role==="jn"))}
+function isAdmin(u){return isStaff(u)}
+function canBill(u){return isStaff(u)||(u.permissions||[]).includes("billing")}
+function roleLabel(r){return {admin:"Junto Nova",jn:"Junto Nova staff",director:"Director",board:"Board",member:"Member"}[r]||r}
+function layerLabel(u){
+  if(isStaff(u))return "All clients";
+  const layers=[roleLabel(u.role)];
+  if((u.permissions||[]).includes("billing"))layers.push("Billing");
+  return layers.join(" · ");
+}
 function visLabel(v){return {clients:"All clients",org:"This organization",director:"Director only",billing:"Billing permission",board:"Board + director",named:"Named people"}[v]||v}
 function canSeeFile(u,f){
   if(!u)return false;
@@ -145,7 +171,7 @@ function canSeeFile(u,f){
 function canSeeActivity(u,a){if(a.visibility==="clients")return true;if(isAdmin(u))return true;return a.orgId&&a.orgId===u.orgId}
 function isPreviewing(){return sessionStorage.getItem("jn_portal_preview")==="1"}
 function current(){const raw=USERS.find(u=>u.id===sessionStorage.getItem("jn_portal_user"));return raw?{...raw,orgName:raw.orgId?ORGS[raw.orgId]:null}:null}
-let view="home",loginError="";
+let view="home",loginError="",formError="",editingId="";
 function go(n){view=n;render()}
 function logout(){
   sessionStorage.removeItem("jn_portal_user");
@@ -166,14 +192,20 @@ function onGoogle(response){
     const email=String(p.email||"").toLowerCase();
     if(!p.email_verified){loginError="Google did not verify that email.";render();return}
     const found=USERS.find(u=>u.email===email);
-    if(!found){
+    let person=found;
+    if(!person&&email.endsWith("@juntonova.com")){
+      person={id:"user-"+Date.now(),email,name:p.name||email,role:"jn",orgId:null,permissions:[]};
+      USERS.push(person);
+      saveDirectory();
+    }
+    if(!person){
       loginError="This Google account isn't invited. Ask Junto Nova to add you.";
       render();
       return;
     }
-    sessionStorage.setItem("jn_portal_user",found.id);
-    sessionStorage.setItem("jn_portal_real",found.id);
-    sessionStorage.setItem("jn_portal_google",JSON.stringify({email,name:p.name||found.name,picture:p.picture||""}));
+    sessionStorage.setItem("jn_portal_user",person.id);
+    sessionStorage.setItem("jn_portal_real",person.id);
+    sessionStorage.setItem("jn_portal_google",JSON.stringify({email,name:p.name||person.name,picture:p.picture||""}));
     sessionStorage.removeItem("jn_portal_preview");
     loginError="";
     view="home";
@@ -208,7 +240,7 @@ function previewAs(id){
   const real=sessionStorage.getItem("jn_portal_real");
   if(!real)return;
   const admin=USERS.find(u=>u.id===real);
-  if(!admin||admin.role!=="admin")return;
+  if(!admin||!isStaff(admin))return;
   sessionStorage.setItem("jn_portal_user",id);
   sessionStorage.setItem("jn_portal_preview","1");
   view="home";
@@ -218,16 +250,114 @@ function exitPreview(){
   const real=sessionStorage.getItem("jn_portal_real");
   if(real)sessionStorage.setItem("jn_portal_user",real);
   sessionStorage.removeItem("jn_portal_preview");
-  view="admin";
+  view="library";
   render();
+}
+function clientsOnly(){return USERS.filter(u=>!isStaff(u))}
+function editClient(id){editingId=id;formError="";view="library";render()}
+function cancelEdit(){editingId="";formError="";render()}
+function saveClient(event){
+  event.preventDefault();
+  const name=document.getElementById("c-name").value.trim();
+  const email=document.getElementById("c-email").value.trim().toLowerCase();
+  const role=document.getElementById("c-role").value;
+  const orgPick=document.getElementById("c-org")?document.getElementById("c-org").value:"";
+  const orgNew=document.getElementById("c-org-new")?document.getElementById("c-org-new").value.trim():"";
+  const billing=document.getElementById("c-billing")?document.getElementById("c-billing").checked:false;
+  if(!name||!email||!email.includes("@")){formError="Enter a name and a real email.";render();return false}
+  if(USERS.some(u=>u.email===email&&u.id!==editingId)){formError="That email already has access.";render();return false}
+  const staff=role==="jn";
+  let orgId=null;
+  if(!staff){
+    if(orgPick==="new"){
+      if(!orgNew){formError="Name the organization.";render();return false}
+      orgId="org-"+orgNew.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40);
+      if(!orgId||orgId==="org-"){formError="Name the organization.";render();return false}
+      ORGS[orgId]=orgNew;
+    }else{
+      orgId=orgPick;
+      if(!ORGS[orgId]){formError="Choose an organization.";render();return false}
+    }
+  }
+  const permissions=staff||!billing?[]:["billing"];
+  if(editingId){
+    const person=USERS.find(u=>u.id===editingId);
+    if(!person||person.role==="admin"){formError="That account can't be changed here.";render();return false}
+    person.name=name;person.email=email;person.role=role;person.orgId=orgId;person.permissions=permissions;
+  }else{
+    USERS.push({id:"user-"+Date.now(),name,email,role,orgId,permissions});
+  }
+  saveDirectory();
+  editingId="";
+  formError="";
+  view="library";
+  render();
+  return false;
+}
+function removeClient(id){
+  const person=USERS.find(u=>u.id===id);
+  if(!person||person.role==="admin")return;
+  const i=USERS.findIndex(u=>u.id===id);
+  if(i>=0)USERS.splice(i,1);
+  if(editingId===id)editingId="";
+  saveDirectory();
+  render();
+}
+function toggleStaffFields(){
+  const staff=document.getElementById("c-role").value==="jn";
+  const box=document.getElementById("c-org-fields");
+  if(box)box.style.display=staff?"none":"";
+}
+function clientForm(){
+  const person=USERS.find(u=>u.id===editingId);
+  const role=person?person.role:"director";
+  const orgOptions=Object.keys(ORGS).map((id,i)=>`<option value="${id}" ${person?person.orgId===id?"selected":"":(i===0?"selected":"")}>${esc(ORGS[id])}</option>`).join("");
+  return `<form class="card form" onsubmit="return saveClient(event)">
+    <div style="font-weight:600">${person?"Edit access":"Add a client"}</div>
+    ${formError?`<div class="err">${formError}</div>`:""}
+    <div class="row2">
+      <label>Name<input id="c-name" value="${person?esc(person.name):""}" required></label>
+      <label>Email<input id="c-email" type="email" value="${person?esc(person.email):""}" required></label>
+    </div>
+    <label>Permission layer
+      <select id="c-role" onchange="toggleStaffFields()">
+        <option value="director" ${role==="director"?"selected":""}>Director — organization, board, and director files</option>
+        <option value="board" ${role==="board"?"selected":""}>Board — organization and board files</option>
+        <option value="member" ${role==="member"?"selected":""}>Member — organization files only</option>
+        <option value="jn" ${role==="jn"?"selected":""}>Junto Nova staff — the whole library</option>
+      </select>
+    </label>
+    <div id="c-org-fields" style="${role==="jn"?"display:none":""}">
+      <label>Organization
+        <select id="c-org">
+          ${orgOptions}
+          <option value="new">New organization</option>
+        </select>
+      </label>
+      <label>New organization name<input id="c-org-new" placeholder="Only if you chose New organization"></label>
+      <label class="check"><input id="c-billing" type="checkbox" ${person&&(person.permissions||[]).includes("billing")?"checked":""}> Billing — can see invoices</label>
+    </div>
+    <div style="display:flex;gap:.6rem">
+      <button class="btn" type="submit">${person?"Save access":"Give access"}</button>
+      ${person?`<button class="btn ghost" type="button" onclick="cancelEdit()">Cancel</button>`:""}
+    </div>
+  </form>`;
+}
+function esc(s){
+  return String(s||"").replace(/[&<>"']/g,function(c){
+    if(c==="&")return "&"+"amp;";
+    if(c==="<")return "&"+"lt;";
+    if(c===">")return "&"+"gt;";
+    if(c==='"')return "&"+"quot;";
+    return "&"+"#39;";
+  });
 }
 function layout(user,active,body){
   const nav=user?`<nav class="tabs">
     <button class="${active==="home"?"active":""}" onclick="go('home')">Home</button>
     <button class="${active==="work"?"active":""}" onclick="go('work')">Your work</button>
-    <button class="${active==="library"?"active":""}" onclick="go('library')">Client library</button>
+    ${isStaff(user)?`<button class="${active==="library"?"active":""}" onclick="go('library')">Client library</button>`:""}
     ${canBill(user)?`<button class="${active==="billing"?"active":""}" onclick="go('billing')">Billing</button>`:""}
-    ${isAdmin(user)?`<button class="${active==="admin"?"active":""}" onclick="go('admin')">Admin</button>`:""}
   </nav>`:"";
   const who=user?`<div class="who"><b>${user.name}</b><br>${roleLabel(user.role)}${user.orgName?" · "+user.orgName:""} · <button onclick="logout()">Sign out</button></div>`:"";
   const tools=user?`<div class="portal-tools"><div class="wrap row">${nav}${who}</div></div>`:"";
@@ -247,27 +377,28 @@ function page(user){
     ${GOOGLE_CLIENT_ID?"":`<p class="muted" style="margin-top:1rem;font-size:.8rem">Google sign-in is being connected for this staging site.</p>`}
   </div></div>`);
   const visible=FILES.filter(f=>canSeeFile(user,f));
-  const work=visible.filter(f=>f.visibility!=="clients");
-  const library=visible.filter(f=>f.visibility==="clients");
-  if(view==="work") return layout(user,"work",`<div class="kicker">This organization</div><h1 class="display">Your work</h1>${fileTable(user,work)}`);
-  if(view==="library") return layout(user,"library",`<div class="kicker">All clients</div><h1 class="display">Client library</h1>${fileTable(user,library)}`);
+  const work=visible;
+  if(view==="library"&&!isStaff(user))view="home";
+  if(view==="admin")view=isStaff(user)?"library":"home";
+  if(view==="work") return layout(user,"work",`<div class="kicker">${isStaff(user)?"All client work":"This organization"}</div><h1 class="display">Your work</h1>${fileTable(user,work)}`);
+  if(view==="library"){
+    const rows=clientsOnly().map(u=>`<tr><td><b>${esc(u.name)}</b><div class="file-meta">${esc(u.email)}</div></td><td>${esc(u.orgId?ORGS[u.orgId]:"—")}</td><td>${esc(layerLabel(u))}</td><td><button class="btn ghost" onclick="editClient('${u.id}')">Access</button> <button class="btn ghost" onclick="previewAs('${u.id}')">Preview</button> <button class="btn ghost" onclick="removeClient('${u.id}')">Remove</button></td></tr>`).join("");
+    const staff=USERS.filter(isStaff).map(u=>esc(u.name)).join(", ");
+    return layout(user,"library",`<div class="kicker">Junto Nova only</div><h1 class="display">Client library</h1><p class="muted">Add a client, give them a Google login, and set what they can see. Clients do not see this page. Staff who can open it: ${staff}. Anyone with a Junto Nova email is staff the first time they sign in.</p>${clientForm()}<div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Client</th><th>Organization</th><th>Permission layer</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="4" class="muted">No clients yet.</td></tr>`}</tbody></table></div>`);
+  }
   if(view==="billing"){
     if(!canBill(user)) return layout(user,"home","");
     const rows=INVOICES.filter(i=>isAdmin(user)||i.orgId===user.orgId).map(i=>`<tr><td><b>${i.number}</b><div class="file-meta">${i.title}</div></td><td>${i.amount}</td><td>${i.due}</td><td><span class="pill ${i.status}">${i.status}</span></td></tr>`).join("");
     return layout(user,"billing",`<div class="kicker">Record</div><h1 class="display">Billing</h1><div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Invoice</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`);
   }
-  if(view==="admin"){
-    if(!isAdmin(user)) return layout(user,"home","");
-    const people=USERS.map(u=>`<tr><td>${u.name}<div class="file-meta">${u.email}</div></td><td>${roleLabel(u.role)}</td><td class="muted">${(u.permissions||[]).join(", ")||"—"}</td><td class="muted">${u.orgId?ORGS[u.orgId]:"—"}</td><td>${u.role==="admin"?"":`<button class="btn ghost" onclick="previewAs('${u.id}')">Preview</button>`}</td></tr>`).join("");
-    return layout(user,"admin",`<div class="kicker">Junto Nova</div><h1 class="display">Admin</h1><p class="muted">Invited people. Preview walks the portal as that person without a separate login.</p><div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Name</th><th>Role</th><th>Permissions</th><th>Org</th><th></th></tr></thead><tbody>${people}</tbody></table></div>`);
-  }
   const feed=ACTIVITY.filter(a=>canSeeActivity(user,a)).sort((a,b)=>a.at<b.at?1:-1).map(a=>`<tr><td><b>${a.title}</b></td><td><span class="pill">${visLabel(a.visibility)}</span></td><td class="muted">${a.at}</td></tr>`).join("");
+  const libraryCard=isStaff(user)?`<div class="card"><div class="muted">Client library</div><div class="stat">${clientsOnly().length}</div><button class="btn ghost" onclick="go('library')">Open</button></div>`:"";
   return layout(user,"home",`
     <div class="kicker">Workspace</div>
-    <h1 class="display">${isAdmin(user)?"All client work":user.orgName}</h1>
+    <h1 class="display">${isStaff(user)?"All client work":user.orgName}</h1>
     <div class="grid" style="margin-bottom:1.25rem">
       <div class="card"><div class="muted">Your work</div><div class="stat">${work.length}</div><button class="btn ghost" onclick="go('work')">Open</button></div>
-      <div class="card"><div class="muted">Client library</div><div class="stat">${library.length}</div><button class="btn ghost" onclick="go('library')">Open</button></div>
+      ${libraryCard}
     </div>
     <div class="card" style="padding:.5rem 1rem"><table><thead><tr><th>Latest</th><th>Audience</th><th>Date</th></tr></thead><tbody>${feed}</tbody></table></div>`);
 }
