@@ -219,12 +219,29 @@ function docTable(section) {
     return ['<button onclick="openDoc(\'' + doc.id + '\')"><b>' + esc(doc.title) + "</b></button>", esc(who)];
   }));
 }
+function offerCard(doc) {
+  const bits = [];
+  if (doc.city) bits.push(esc(doc.city));
+  if (doc.when) bits.push(esc(doc.when));
+  if (doc.cost) bits.push(esc(doc.cost));
+  const link = /^https:\/\/\S+$/i.test(doc.link || "") ? esc(doc.link) : "";
+  return '<article class="card" style="margin-bottom:.75rem"><h2 class="display" style="font-size:1.35rem">' + esc(doc.title) + "</h2>" +
+    (bits.length ? "<p><b>" + bits.join(" · ") + "</b></p>" : "") +
+    (doc.body ? '<p class="muted" style="white-space:pre-wrap">' + esc(doc.body) + "</p>" : "") +
+    (link ? '<p style="margin-top:.75rem"><a class="btn" href="' + link + '" target="_blank" rel="noopener">Fund this</a></p>' : "") +
+    (doc.hasFile ? '<p style="margin-top:.5rem"><button class="btn ghost" type="button" onclick="openDoc(\'' + doc.id + '\')">Open file</button></p>' : "") +
+    "</article>";
+}
 function addForm(section) {
   if (!room.staff) return "";
+  const offer = section === "proposals" || section === "research";
   const orgs = Object.keys(room.orgs || {}).map(function (id) {
     return '<option value="' + esc(id) + '">' + esc(room.orgs[id]) + "</option>";
   }).join("") + '<option value="new">New organization</option>';
-  return '<form class="form" onsubmit="saveDoc(event,\'' + section + '\')"><div class="kicker">Add a document</div><label>Title<input id="d-title" required></label><label>File<input id="d-file" type="file"></label><label>Who can see it<select id="d-vis" onchange="document.getElementById(\'d-org-wrap\').hidden=this.value===\'clients\'"><option value="clients">All clients</option><option value="org">This organization</option><option value="director">Director</option><option value="board">Board</option><option value="billing">Billing</option></select></label><div id="d-org-wrap" hidden><label>Organization<select id="d-org">' + orgs + '</select></label><label>New organization name<input id="d-org-name" placeholder="Only if you chose New organization"></label></div><label>Note<textarea id="d-body" rows="4"></textarea></label><button class="btn" type="submit">Save document</button></form>';
+  const extra = offer
+    ? '<label>City<input id="d-city" placeholder="Phoenix"></label><label>Days it can be done<input id="d-when" placeholder="March 12–14"></label><label>Cost<input id="d-cost" placeholder="$18,500" required></label><label>Link to fund it<input id="d-link" type="url" placeholder="https://"></label>'
+    : "";
+  return '<form class="form" onsubmit="saveDoc(event,\'' + section + '\')"><div class="kicker">' + (offer ? "Add something they can fund" : "Add a document") + '</div><label>' + (offer ? "What" : "Title") + '<input id="d-title" required placeholder="' + (offer ? "Focus group" : "") + '"></label>' + extra + '<label>Who can see it<select id="d-vis" onchange="document.getElementById(\'d-org-wrap\').hidden=this.value===\'clients\'"><option value="clients">All clients</option><option value="org">This organization</option><option value="director">Director</option><option value="board">Board</option><option value="billing">Billing</option></select></label><div id="d-org-wrap" hidden><label>Organization<select id="d-org">' + orgs + '</select></label><label>New organization name<input id="d-org-name" placeholder="Only if you chose New organization"></label></div><label>Comment<textarea id="d-body" rows="4" placeholder="' + (offer ? "What they get, and why it is worth funding." : "") + '"></textarea></label><label>File, if there is one<input id="d-file" type="file"></label><button class="btn" type="submit">' + (offer ? "Post this" : "Save document") + "</button></form>";
 }
 function page() {
   if (!token) {
@@ -247,7 +264,8 @@ function page() {
     main = admin();
   } else {
     const titles = { proposals: "Proposals", research: "Research", billing: "Billing" };
-    main = '<div class="kicker">' + esc(org) + '</div><h1 class="display">' + titles[view] + "</h1>" + docTable(view) + addForm(view);
+    const list = view === "proposals" || view === "research" ? (docs(view).map(offerCard).join("") || '<p class="muted">Nothing posted yet.</p>') : docTable(view);
+    main = '<div class="kicker">' + esc(org) + '</div><h1 class="display">' + titles[view] + "</h1>" + list + addForm(view);
   }
   if (reading) {
     var download = "";
@@ -331,6 +349,10 @@ async function saveDoc(event, section) {
       orgId: document.getElementById("d-org") ? document.getElementById("d-org").value : "new",
       orgName: document.getElementById("d-org-name") ? document.getElementById("d-org-name").value : "",
       body: document.getElementById("d-body").value,
+      city: document.getElementById("d-city") ? document.getElementById("d-city").value : "",
+      when: document.getElementById("d-when") ? document.getElementById("d-when").value : "",
+      cost: document.getElementById("d-cost") ? document.getElementById("d-cost").value : "",
+      link: document.getElementById("d-link") ? document.getElementById("d-link").value : "",
       contentB64: contentB64,
       filename: filename,
       mime: mime,
