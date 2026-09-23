@@ -110,20 +110,20 @@ const MATRIX = {
   cultural: {
     yh: "Drives change", yl: "Doesn't drive change", xl: "Not aligned", xh: "Aligned", xp: "Aligned", yp: "Drives change",
     quads: [
-      ["Long-term campaigns", "Not aligned. It still drives the outcome.", "top-3 left-3 text-left"],
-      ["Mobilize", "Aligned, and it drives change.", "top-3 right-3 text-right"],
-      ["Avoid", "Not aligned. Doesn't change anything.", "bottom-3 left-3 text-left"],
-      ["Appeal higher", "Aligned. This value doesn't move much.", "bottom-3 right-3 text-right"],
+      ["Run persuasion and messaging campaigns", "Not aligned. It still drives the outcome.", "top-3 left-3 text-left"],
+      ["Run public campaigns", "Aligned, and it drives change.", "top-3 right-3 text-right"],
+      ["Avoid these", "Not aligned. Doesn't change anything.", "bottom-3 left-3 text-left"],
+      ["Appeal to adjacent high-leverage beliefs", "Aligned. This value doesn't move much.", "bottom-3 right-3 text-right"],
     ],
   },
 };
 function theory(item, lens) {
   if (lens !== "cultural") return item.summary;
   const drives = item.y >= 50, aligned = item.x >= 50;
-  if (drives && aligned) return "Aligned with lower costs, freer markets, and limited government, and it drives the outcome. Mobilize these people. Turn them into evangelists.";
-  if (drives && !aligned) return "Not on our side, and it still drives the outcome. This takes a long-term culture campaign.";
-  if (!drives && aligned) return "They agree with you, but this value does not change much. Appeal to them on a higher-priority value.";
-  return "They do not agree, and this does not change the outcome. Avoid. No reason to spend time here.";
+  if (drives && aligned) return "Aligned with lower costs, freer markets, and limited government, and it drives the outcome. Run public campaigns. Turn the people who already hold this into the messengers.";
+  if (drives && !aligned) return "Not on our side, and it still drives the outcome. Run persuasion and messaging campaigns.";
+  if (!drives && aligned) return "They agree with you, but this value does not change much. Appeal to adjacent high-leverage beliefs.";
+  return "They do not agree, and this does not change the outcome. Avoid these.";
 }
 function fold(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); }
 function areaBy(id) { return DATA.areas.find((a) => a.id === id) || DATA.areas[0]; }
