@@ -15,8 +15,12 @@ production.
   thin STAGING bar sits at the top of each page.
 - GitHub Pages ignores `_headers` and `_redirects`, so security headers,
   redirects and the custom 404 behave differently here than on live.
-- The portal page calls the production portal API (portal-api.juntonova.com),
-  so signing in or editing ideas on the test site changes real data.
+- The portal is cut off from the live portal. On juntonova.github.io it never
+  calls portal-api.juntonova.com (API is empty in `assets/portal.js` and the
+  page's Content-Security-Policy no longer allows that address). It runs on
+  built-in sample data instead: staff view by default, client view at
+  `portal.html?preview=client`. Edits stay in that browser tab only, and
+  "Sign out" just reloads the sample.
 
 ## Workflow
 
@@ -29,4 +33,7 @@ production.
 Copy JuntoNova/JuntoNov `main` over this repo (keep this README, `.nojekyll`
 and `.assetsignore`, skip `wrangler.jsonc`), then add the noindex meta and the
 STAGING bar to every page and set `robots.txt` to `Disallow: /`.
+Then redo the portal cut-off: in `assets/portal.js` set `API = ""`, make
+`previewKind()` return sample data on juntonova.github.io, make `logout()`
+reload in preview, and drop portal-api.juntonova.com from `portal.html`'s CSP.
 Last refreshed from live: JuntoNov main @ 323bd68 (Nov 16, 2026).

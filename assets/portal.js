@@ -4,7 +4,8 @@
 (function () {
 "use strict";
 var GOOGLE_CLIENT_ID = "696574706151-9qjv11se3a3us5k86o2fodtktb4m5r2d.apps.googleusercontent.com";
-var API = "https://portal-api.juntonova.com";
+/* TEST SITE: no backend. The live portal API is never called from here; the page runs on sample data. */
+var API = "";
 var token = "";
 var room = null;
 var view = "ideas";
@@ -55,6 +56,7 @@ function signedOut() {
   render();
 }
 async function logout() {
+  if (previewKind()) { location.reload(); return; }
   var ok = false;
   try {
     var res = await fetch(API + "/auth/logout", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: "{}" });
@@ -1159,8 +1161,11 @@ window.addEventListener("resize", function () {
 function previewKind() {
   try {
     var host = location.hostname;
+    var asked = new URLSearchParams(location.search).get("preview") || "";
+    /* TEST SITE: always sample data. ?preview=client shows the client view; staff is the default. */
+    if (host === "juntonova.github.io") return asked === "client" ? "client" : "staff";
     if (host !== "localhost" && host !== "127.0.0.1") return "";
-    return new URLSearchParams(location.search).get("preview") || "";
+    return asked;
   } catch (e) { return ""; }
 }
 function previewItem(id, title, type, status, lens, ease, impact) {
