@@ -355,9 +355,9 @@ function paintDetail(){
   const f=[],mo=d.money;
   // One figure per dot, the same everywhere: the sentence, then how we got the figure.
   if(mo){f.push('<b>'+esc(mo.lead)+'</b> '+esc(mo.rest));f.push('<b>How we got this figure.</b> '+esc(mo.how));}
-  else f.push('<b>No dollar figure yet.</b> No study we found puts a dollar figure on this '+(d.lens==="cultural"?'value or the rule behind it.':d.threat?'idea.':'change.'));
+  else f.push('<b>No dollar figure yet.</b> '+(d.why_none?esc(d.why_none):'No study we found puts a dollar figure on this '+(d.lens==="cultural"?'value or the rule behind it.':d.threat?'idea.':'change.')));
   if(d.lens!=="cultural"){
-    if(d.reach!=null)f.push('<b>'+Math.round(d.reach*100)+' percent</b> of households'+(natl?' across the country':d.where?' in '+esc(d.where):'')+' would see this '+(mo&&/keep|earn|gain/.test(mo.verb)?'gain':'saving')+'.');
+    if(d.reach!=null)f.push('<b>'+Math.round(d.reach*100)+' percent</b> of households'+(natl?' across the country':d.where?' in '+esc(d.where):'')+' would feel this change.');
     if(d.ownership===20)f.push('Raises what families earn or own, not only what they pay.');
     else if(d.ownership===10)f.push('Lowers the price of something families own, like a home.');
   }
