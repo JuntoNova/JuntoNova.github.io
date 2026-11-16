@@ -366,9 +366,9 @@ function paintDetail(){
   const k=[],noPrec=!d.precedent_note||/^no precedent/i.test(d.precedent_note);
   if(d.lens!=="cultural"){
     if(d.lens==="structural"&&d.actor)k.push('<b>Who has to act.</b> '+esc(d.actor.line));
-    if(!noPrec)k.push('<b>'+(d.lens==="practical"?"Where the rules already allow this change.":"Already done somewhere.")+'</b> '+esc(d.precedent_note)+'.');
+    if(!noPrec)k.push('<b>'+(d.lens==="practical"?"Where the rules already allow this change.":"Already done somewhere.")+'</b> '+esc(d.precedent_note).replace(/\.$/,'')+'.');
     else if(d.lens==="structural")k.push('<b>Done elsewhere.</b> Not yet, in any place we found.');
-    if(d.lens==="structural"&&d.opposition_note)k.push('<b>'+(d.threat?'Who stands against this idea.':'Who defends the current rule.')+'</b> '+esc(d.opposition_note)+'.');
+    if(d.lens==="structural"&&d.opposition_note)k.push('<b>'+(d.threat?'Who stands against this idea.':'Who defends the current rule.')+'</b> '+esc(d.opposition_note).replace(/\.$/,'')+'.');
     if(d.lens==="structural"&&d.parts&&d.parts.ease)d.parts.ease.filter(e=>/^Extra hurdle/.test(e[0])).forEach(e=>k.push('<b>Extra hurdle.</b> '+esc(e[0].replace(/^Extra hurdle:\s*/,"").replace(/^./,c=>c.toUpperCase()))+'.'));
   }
   html+=card("Likely to happen",'Likely to happen <b>'+rx(d)+'</b> of 100',(k.length?'<ul class="facts">'+k.map(x=>'<li>'+x+'</li>').join("")+'</ul>':'')+pollBlock(d)+confRow(d.conf_likely)+fund(d.ask_likely));
