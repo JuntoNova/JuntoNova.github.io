@@ -22,6 +22,15 @@ production.
   `portal.html?preview=client`. Edits stay in that browser tab only, and
   "Sign out" just reloads the sample.
 
+## What is only on the test site (Nov 16, 2026)
+
+The dev copy built for review moved here: Your bottom line on the home page
+(what you pay, and what you earn and own), the issues grid for all 11 areas
+with its Methodology page, and the portal mock with research privacy controls
+and the portal issue grid (`portal-grid.html`), which also shows opposing
+ideas. Grid data lives in `data/`. The portal pieces run on sample data only.
+None of this is on juntonova.com.
+
 ## Workflow
 
 1. Build and check every change here first.

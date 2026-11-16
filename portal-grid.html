@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Issue grid · Client portal · Junto Nova</title>
+<meta name="description" content="Changes that lower what families pay or raise what they earn and own, placed by how much money they move and how easy they are to make.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1A1A1A">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="jn-polish.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap');
+:root{--charcoal:#1A1A1A;--ember:#C45C26;--muted:#64748B;--border:#E2E8F0;--surface:#F8FAFC;--paper:#F0E6D3}
+body{font-family:Inter,system-ui,sans-serif;color:var(--charcoal);background:#fff}
+.display{font-family:'Playfair Display',Georgia,serif;font-weight:700;letter-spacing:-0.02em}
+.jn-skip{position:absolute;left:-9999px;top:0;z-index:1000;background:#1A1A1A;color:#fff;padding:.75rem 1rem;border-radius:.5rem;font:500 .875rem/1 Inter,system-ui,sans-serif;text-decoration:none}
+.jn-skip:focus{left:.75rem;top:.75rem}
+:focus-visible{outline:2px solid #1A1A1A;outline-offset:2px}
+select.ctl{height:2.75rem;padding:0 2.25rem 0 .9rem;width:100%;appearance:none;-webkit-appearance:none;border:1px solid #8091A7;border-radius:.75rem;background:#fff;font-weight:500;font-size:1rem}
+.ctl-wrap{position:relative;display:block}
+.ctl-wrap svg{pointer-events:none;position:absolute;top:50%;right:.75rem;width:1rem;height:1rem;transform:translateY(-50%);color:var(--muted)}
+.lens-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem}
+.lens-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;min-width:0;border:1px solid var(--border);border-radius:.75rem;padding:.5rem .6rem;font-size:.875rem;font-weight:500;background:#fff;color:var(--muted);text-align:center}
+.lens-top{display:inline-flex;align-items:center;gap:.45rem}
+.lens-btn[aria-pressed="true"]{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+.shape{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:50%;flex:none}
+.shape.circle{border-radius:50%}
+.dot{position:absolute;width:28px;height:28px;transform:translate(-50%,50%);display:flex;align-items:center;justify-content:center;background:none;border:0;padding:0;cursor:pointer}
+.dot .mk{display:block;width:14px;height:14px;border:2px solid var(--charcoal);border-radius:50%;background:#fff}
+.dot.practical .mk{border-radius:50%}
+.dot.on .mk{background:var(--ember);border-color:var(--ember)}
+/* One text width on this page: every line runs the width of its box (overrides the 50ch reading measure). */
+#main p,#main li,#main dd,#detail p,#detail li{max-width:none}
+.dot.threat .mk{width:12px;height:12px;border-radius:2px;transform:rotate(45deg);border-color:#8B1E2D;background:#8B1E2D}
+.dot.threat.on .mk{background:var(--ember);border-color:var(--ember)}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem;justify-content:center;margin-top:.6rem;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.45rem}
+.legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--charcoal);border-radius:50%;background:#fff}
+.legend i.t{width:10px;height:10px;border-radius:2px;transform:rotate(45deg);border-color:#8B1E2D;background:#8B1E2D}
+.watch{margin-top:.75rem;border-left:3px solid #8B1E2D;padding:.1rem 0 .1rem .8rem;font-size:.95rem;line-height:1.55}
+.lk.threat .k{color:#8B1E2D}
+.chip-lbl{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;max-width:13rem;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.3;background:rgba(255,255,255,.95);padding:1px 6px;border-radius:6px;pointer-events:none}
+.pill{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.25rem .7rem;font-size:.75rem;background:var(--surface);color:var(--muted)}
+.pill b{color:var(--charcoal);font-weight:600}
+.flag{background:#FBEFE7;color:#8A3D14}
+.lens-q{font-weight:400;opacity:.75;font-size:.8em;line-height:1.3}
+@media (max-width:639px){.lens-q{display:none}}
+.ok{background:#E7F0EA;color:#1F5133}
+.tbl tr.warn td{color:#8A3D14}
+.basis{margin-top:.6rem;border-left:3px solid var(--border);padding:.15rem 0 .15rem .7rem;font-size:.8125rem;line-height:1.5}
+.basis.est{border-color:#C45C26}
+.basis b{font-weight:600}
+.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:0 .3rem;margin-left:.35rem;vertical-align:1px}
+.tbl{width:100%;font-size:.8125rem;border-collapse:collapse;margin-top:.25rem}
+.tbl td{padding:.35rem 0;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:.75rem}
+.tbl tr.tot td{font-weight:600;border-bottom:0}
+.chain{display:grid;grid-template-columns:1fr;gap:.5rem}
+@media(min-width:768px){.chain{grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch}}
+.chain-card{border:1px solid var(--border);border-radius:.9rem;padding:.75rem .9rem;background:#fff;text-align:left;width:100%}
+.chain-card:hover{border-color:#8091A7}
+.chain-arrow{display:none;align-self:center;color:var(--muted)}
+@media(min-width:768px){.chain-arrow{display:block}}
+.ylab{position:absolute;left:.45rem;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;pointer-events:none;z-index:1}
+.quad{position:absolute;max-width:9.5rem;pointer-events:none;z-index:0}
+.rank li button{display:flex;width:100%;align-items:center;gap:.6rem;padding:.55rem .25rem;text-align:left;border-bottom:1px solid var(--border)}
+.rank .num{font-variant-numeric:tabular-nums;font-size:.75rem;color:var(--muted);white-space:nowrap}
+.acc{border-top:1px solid var(--border)}
+.acc-row{border-bottom:1px solid var(--border)}
+.acc-row summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0;font-weight:600;font-size:1.05rem;color:var(--charcoal)}
+.acc-row summary::-webkit-details-marker{display:none}
+.acc-plus{position:relative;flex:none;width:1.6rem;height:1.6rem;border-radius:999px;border:1px solid var(--border)}
+.acc-plus::before,.acc-plus::after{content:"";position:absolute;left:50%;top:50%;width:.7rem;height:2px;background:currentColor;transform:translate(-50%,-50%);transition:transform .2s}
+.acc-plus::after{transform:translate(-50%,-50%) rotate(90deg)}
+.acc-row[open] .acc-plus::after{transform:translate(-50%,-50%) rotate(0deg)}
+.acc-body{padding:0 0 1.1rem;color:#334155;line-height:1.6;min-width:0}
+/* An open row: Ember mark on the header, body in its own Warm Paper panel. */
+.acc-row[open] summary{color:var(--ember)}
+.acc-row[open] summary .acc-plus{border-color:var(--ember)}
+.acc-row[open] .acc-body{background:#F7F0E4;border:1px solid #E8DCC6;border-left:4px solid var(--ember);border-radius:.9rem;padding:1rem 1.15rem;margin-bottom:1rem;color:var(--charcoal)}
+.acc-row[open] .acc-corners div{background:#fff;border-color:#E8DCC6}.acc-row[open] .ex-rows>div{border-top-color:#E8DCC6}
+.acc-corners{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.4rem;margin-top:.6rem}
+.acc-corners div{border:1px solid var(--border);border-radius:.75rem;padding:.55rem .75rem;background:var(--surface)}
+.acc-corners dt{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.acc-corners dd{margin:0}
+details summary{cursor:pointer}
+@media (max-width:639px){.quad,.chip-lbl{display:none}}
+.chain.three{grid-template-columns:1fr}@media (min-width:768px){.chain.three{grid-template-columns:repeat(3,minmax(0,1fr))}}.ready-bar{height:6px;border-radius:999px;background:var(--border);overflow:hidden;margin-top:.5rem}.ready-bar>span{display:block;height:100%;background:var(--charcoal)}.ready-tbl td{padding:.3rem 0}
+.ex-rows{display:grid;gap:.4rem}.ex-rows>div{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:.75rem;align-items:baseline;border-top:1px solid var(--border);padding-top:.4rem}.ex-rows dt{display:flex;align-items:center;gap:.45rem;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.ex-rows dd{margin:0;font-size:.95rem;color:var(--charcoal)}
+.facts{margin-top:.5rem;display:grid;gap:.5rem;font-size:.9rem;line-height:1.55;color:#334155}
+.facts li{padding-left:.9rem;position:relative}.facts li::before{content:"";position:absolute;left:0;top:.6em;width:5px;height:5px;border-radius:50%;background:#94A3B8}
+.facts b{color:var(--charcoal);font-weight:600}
+.pq{margin-top:.5rem;display:grid;gap:.6rem;font-size:.9rem;line-height:1.55;color:#334155}
+.pq b{color:var(--charcoal);font-weight:600}
+.pq-q{border:1px solid var(--border);border-radius:.75rem;background:var(--surface);padding:.75rem .9rem;min-width:0}
+.pq-acc{border:1px solid var(--border);border-radius:.75rem;background:var(--surface);min-width:0}
+.pq-acc summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem .9rem;cursor:pointer;min-height:44px}
+.pq-acc summary::-webkit-details-marker{display:none}
+.pq-acc summary .pq-h{min-width:0;font-size:.85rem;color:var(--charcoal)}.pq-acc summary .pq-h b{font-weight:600}
+.pq-acc .acc-plus{width:1.4rem;height:1.4rem;background:#fff}
+.pq-acc[open] .acc-plus::after{transform:translate(-50%,-50%) rotate(0deg)}
+.pq-acc .pq-body{padding:0 .9rem .8rem;border-top:1px solid var(--border);padding-top:.7rem}
+.pq-text{color:var(--charcoal);font-style:italic}
+.pq-meta{margin-top:.5rem;display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:.2rem .75rem;font-size:.8rem}
+.pq-meta dt{color:var(--muted);font-weight:600}.pq-meta dd{margin:0;min-width:0}
+.pq-note{margin-top:.4rem;font-size:.8rem;color:var(--muted)}
+.pq-src{display:inline-block;margin-top:.4rem;font-size:.8rem;color:var(--ember);font-weight:600}
+.srcs{margin-top:.6rem;display:grid;gap:.3rem;font-size:.78rem;line-height:1.45;color:var(--muted)}
+.srcs li{display:grid;grid-template-columns:3rem minmax(0,1fr);gap:.5rem}.srcs .yr{font-variant-numeric:tabular-nums;font-weight:600}
+.conf{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;margin-top:.4rem}.conf b{font-family:'Playfair Display',Georgia,serif;font-size:1.6rem}
+.conf.High b{color:#1F5133}.conf.Medium b{color:#8A5A14}.conf.Low b{color:#8A3D14}
+.ask{margin-top:1.5rem;border-radius:1rem;background:var(--charcoal);color:#F0E6D3;padding:1.1rem 1.2rem}
+.ask h3{font-family:'Playfair Display',Georgia,serif;font-size:1.25rem;color:#fff}
+.ask ul{margin-top:.5rem;display:grid;gap:.35rem;padding-left:1.1rem;list-style:disc;font-size:.9rem;line-height:1.5}
+.ask a{display:inline-flex;margin-top:.9rem;border-radius:.75rem;background:var(--ember);color:#fff;font-weight:600;font-size:.875rem;padding:.6rem 1.1rem}
+.links{display:grid;gap:.5rem;margin-top:.5rem}@media(min-width:768px){.links{grid-template-columns:1fr 1fr}}
+.lk{display:flex;flex-direction:column;gap:.15rem;width:100%;text-align:left;border:1px solid var(--border);border-radius:.8rem;padding:.6rem .8rem;background:#fff;min-width:0}
+.lk:hover{border-color:#8091A7}.lk .k{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.lk .t{font-size:.9rem;font-weight:500;color:var(--charcoal)}.lk .v{font-size:.75rem;color:var(--muted)}
+.ours{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:0 .3rem;background:#FBEFE7;color:#8A3D14;margin-left:.3rem}
+.prompt{border:1px dashed #94A3B8;border-radius:1rem;padding:1rem 1.1rem;color:var(--muted);font-size:.95rem;text-align:center}
+.card{border:1px solid var(--border);border-radius:1rem;background:#fff;overflow:hidden;min-width:0}
+.card-b{padding:1.1rem 1.25rem 1.25rem;min-width:0}@media(min-width:768px){.card-b{padding:1.25rem 1.5rem 1.5rem}}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:.25rem 1rem;flex-wrap:wrap;background:var(--ember);color:#fff;padding:.8rem 1.25rem}@media(min-width:768px){.card-h{padding:.85rem 1.5rem}}
+.card-h h3{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;font-weight:700;color:#fff}
+.card-h .sc{font-size:.8rem;color:#fff}.card-h .sc b{color:#fff;font-size:1rem}
+.conf-row{display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap;margin-top:.9rem;padding:.6rem .8rem;border-radius:.75rem;background:var(--surface);font-size:.875rem;color:#334155}
+.conf-row .lv{font-weight:700}.conf-row .lv.High{color:#1F5133}.conf-row .lv.Medium{color:#8A5A14}.conf-row .lv.Low{color:#8A3D14}
+.fund{margin-top:.7rem;border-left:3px solid var(--ember);padding:.2rem 0 .2rem .75rem;font-size:.85rem;color:#334155;line-height:1.5}
+.fund b{color:var(--charcoal)}.fund a{color:var(--ember);font-weight:600;white-space:nowrap}
+.todo{margin-top:.9rem;border-radius:.75rem;background:var(--surface);padding:.8rem .9rem;font-size:.9rem;line-height:1.55;color:#334155}
+.btn-dark{display:inline-flex;margin-top:.7rem;border-radius:.75rem;background:var(--charcoal);color:#fff;font-weight:600;font-size:.875rem;padding:.6rem 1.1rem}
+</style>
+</head>
+<body>
+<a class="jn-skip" href="#main">Skip to main content</a>
+<div style="background:#1A1A1A;color:#fff;font-size:11px;letter-spacing:.08em;text-align:center;padding:6px 12px">STAGING</div>
+<header class="jn-header">
+<div class="jn-header__in">
+<a class="jn-brand" href="index.html#about"><img src="jn-header.png" alt="Junto Nova" width="40" height="46"><span>JUNTO NOVA</span></a>
+<button type="button" id="jn-menu-btn" class="jn-menu-btn" aria-expanded="false" aria-controls="jn-menu" aria-label="Open menu">
+<svg class="jn-bars" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+<svg class="jn-x" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+</div>
+<nav id="jn-menu" class="jn-menu" aria-label="Primary" hidden>
+<a href="index.html#about">About Us</a>
+<a href="index.html#costs">Your Bottom Line</a>
+<a href="issues.html" aria-current="page">Issues</a>
+<a href="https://juntonova.github.io/ventures">Ventures</a>
+<a href="portal.html">Client login</a>
+<a href="project.html">Let's work together</a>
+</nav>
+</header>
+<script>
+(function(){
+var b=document.getElementById('jn-menu-btn'),m=document.getElementById('jn-menu');
+function set(o,f){b.setAttribute('aria-expanded',o?'true':'false');b.setAttribute('aria-label',o?'Close menu':'Open menu');m.hidden=!o;if(!o&&f)b.focus()}
+function open(){return b.getAttribute('aria-expanded')==='true'}
+b.addEventListener('click',function(){set(!open(),false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&open())set(false,true)});
+document.addEventListener('click',function(e){if(open()&&!m.contains(e.target)&&!b.contains(e.target))set(false,false)});
+})();
+</script>
+
+<main id="main" class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-16">
+<p class="text-sm"><a id="back-portal" href="portal.html" class="underline" style="color:var(--muted)">&larr; Back to the portal</a></p>
+<p class="mt-4 text-[11px] font-semibold uppercase tracking-widest" style="color:var(--muted)">Client portal</p>
+<h1 class="display mt-1 text-3xl sm:text-4xl">Issue grid, with opposing ideas</h1>
+<div class="mt-3 space-y-2 text-base leading-relaxed" style="max-width:44rem">
+<p>The same grid as the public Issues page, with the same 11 issues and the same scores. Round dots are actions we back.</p>
+<p>Red diamonds are opposing ideas: proposals and values that could win and would work against the actions you back. A red diamond high and to the right has real money behind the idea and a real chance of passing. Plan your defense there first.</p>
+<p>Opposing ideas show only here in the portal, never on the public site.</p>
+</div>
+<div class="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
+<label class="ctl-wrap"><span class="sr-only">Issue area</span><select id="area" class="ctl"></select><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></label>
+<label class="ctl-wrap"><span class="sr-only">Level of government</span><select id="level" class="ctl"></select><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></label>
+</div>
+
+
+<script>document.querySelectorAll('details[name="grid-help"]').forEach(d=>d.addEventListener("toggle",()=>{if(d.open)document.querySelectorAll('details[name="grid-help"]').forEach(o=>{if(o!==d)o.open=false})}));</script>
+<div class="lens-grid mt-3" id="lenses" role="group" aria-label="Lens"></div>
+<div id="matrix" class="mt-3"></div>
+<p id="unpolled" class="mt-3 text-xs leading-relaxed" style="color:var(--muted)"></p>
+<div class="relative mt-5">
+<svg class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" style="color:var(--muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z"/></svg>
+<input id="q" class="w-full rounded-xl border bg-white" style="height:2.75rem;padding:0 1rem 0 2.4rem;border-color:#8091A7;font-size:1rem" placeholder="Find an action" autocomplete="off" aria-label="Find an action">
+<ul id="hits" class="absolute z-30 mt-1 hidden max-h-72 w-full overflow-auto rounded-xl border bg-white py-1 shadow-lg" style="border-color:var(--border)"></ul>
+</div>
+
+
+<div id="detail" class="mt-8 grid gap-8"></div>
+
+<p class="mt-8 text-sm"><a href="methodology.html" class="underline" style="color:var(--charcoal)">Methodology</a></p>
+<script>(function(){var q=new URLSearchParams(location.search).get("preview");if(q){var a=document.getElementById("back-portal");a.href="portal.html?preview="+encodeURIComponent(q);}})();</script>
+</main>
+
+<footer class="jn-foot" style="border-top:1px solid #E2E8F0">
+<div style="max-width:64rem;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;font-size:.875rem;color:#64748B">
+<div><div class="display" style="font-size:1.125rem;color:#1A1A1A">JUNTO NOVA</div><div style="font-size:.75rem;margin-top:.25rem">Junto Nova LLC · Dallas, TX</div></div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem"><span>© 2026</span></div>
+</div></footer>
+
+<script src="data/grid-data.js"></script>
+<script src="data/threat-data.js"></script>
+<script>
+const G = window.GRID;
+// Opposing ideas load only on the portal grid. The public /issues page never loads threat-data.js.
+const TH=(window.THREATS&&window.THREATS.dots)||[];
+if(TH.length){G.dots=G.dots.concat(TH);TH.forEach(t=>(t.links||[]).forEach(k=>{const a=G.dots.find(x=>x.id===k.id&&!x.threat);if(a){a.watch=a.watch||[];if(!a.watch.includes(t.id))a.watch.push(t.id);}}));}
+const QUADS=["Big money, hard to win","Big money, likely to happen","Smaller money, hard to win","Smaller money, likely to happen"];
+const LENSES = [
+  {id:"cultural", label:"Cultural", shape:"", q:"A value to stand for", find:"Find a value or belief", noun:"values and beliefs", lo:"Less likely", hi:"More likely to happen", quads:QUADS},
+  {id:"structural", label:"Structural", shape:"", q:"A rule to change", find:"Find a proposal", noun:"proposals", lo:"Less likely", hi:"More likely to happen", quads:QUADS},
+  {id:"practical", label:"Practical", shape:"", q:"A change that moves the money now", find:"Find a practical change", noun:"practical changes", lo:"Less likely", hi:"More likely to happen", quads:QUADS},
+];
+const QPOS=["top:.6rem;left:.75rem","top:.6rem;right:.75rem;text-align:right","bottom:.6rem;left:.75rem","bottom:.6rem;right:.75rem;text-align:right"];
+function L(id){return LENSES.find(l=>l.id===id);}
+function rx(d){return d.x;}
+function quadName(d){const x=rx(d);if(x==null)return "";const q=QUADS;return d.y>=50?(x>=50?q[1]:q[0]):(x>=50?q[3]:q[2]);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function fold(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function money(n){return "$"+Math.round(n).toLocaleString("en-US");}
+function firstSentence(s){s=String(s||"");const i=s.search(/\.\s/);return i>0?s.slice(0,i+1):s;}
+const params=new URLSearchParams(location.search);
+const AREA_IDS=G.areas.map(a=>a.id);
+let areaId=AREA_IDS.includes(params.get("area"))?params.get("area"):"housing";
+let level=["all","local","state","federal"].includes(params.get("level"))?params.get("level"):"all";
+let lens=LENSES.some(l=>l.id===params.get("lens"))?params.get("lens"):"structural";
+let selected=params.get("dot")||null, query="";
+const areaEl=document.getElementById("area"), levelEl=document.getElementById("level");
+const groups={pay:"What you pay",own:"What you earn and own"};
+Object.keys(groups).forEach(g=>{const og=document.createElement("optgroup");og.label=groups[g];G.areas.filter(a=>a.group===g).forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.name;og.appendChild(o);});areaEl.appendChild(og);});
+function areaName(id){return (G.areas.find(a=>a.id===id)||{}).name;}
+function inLevel(d,lv){return lv==="all"||d.level==="Any"||d.level.toLowerCase()===lv;}
+function inArea(lv=level,ar=areaId){return G.dots.filter(d=>d.area_id===ar&&inLevel(d,lv));}
+function view(){return inArea().filter(d=>d.lens===lens&&rx(d)!=null);}
+function paintLevelOptions(){
+  const opts=[["all","All levels"],["local","Local"],["state","State"],["federal","Federal"]];
+  levelEl.innerHTML=opts.map(([v,t])=>{const n=G.dots.filter(d=>d.area_id===areaId&&d.lens===lens&&inLevel(d,v)).length;return '<option value="'+v+'">'+t+(v==="all"?"":" ("+n+")")+'</option>';}).join("");
+  levelEl.value=level;
+}
+const lensesEl=document.getElementById("lenses");
+lensesEl.innerHTML=LENSES.map(l=>'<button type="button" class="lens-btn" data-lens="'+l.id+'"><span class="lens-top"><span class="shape '+l.shape+'"></span>'+l.label+'</span><span class="lens-q">'+l.q+'</span></button>').join("");
+lensesEl.querySelectorAll("button").forEach(b=>b.onclick=()=>{lens=b.dataset.lens;selected=null;sync();});
+areaEl.onchange=()=>{areaId=areaEl.value;selected=null;sync();};
+levelEl.onchange=()=>{level=levelEl.value;selected=null;sync();};
+
+const qEl=document.getElementById("q"),hitsEl=document.getElementById("hits");
+function search(){const t=fold(query).split(" ").filter(Boolean);if(!t.length)return[];return G.dots.filter(d=>d.lens===lens).map(d=>{const name=fold(d.issue),hay=name+" "+fold(d.change)+" "+fold(d.effect)+" "+fold(d.area)+" "+fold((d.members||[]).join(" "));if(!t.every(x=>hay.includes(x)))return null;let s=0;if(name.includes(t.join(" ")))s+=50;if(d.area_id===areaId)s+=20;return{d,s};}).filter(Boolean).sort((a,b)=>b.s-a.s).slice(0,8).map(r=>r.d);}
+function renderHits(){const h=search();if(!fold(query)){hitsEl.classList.add("hidden");hitsEl.innerHTML="";return;}hitsEl.classList.remove("hidden");if(!h.length){hitsEl.innerHTML='<li class="px-3 py-2 text-sm" style="color:var(--muted)">Nothing matches.</li>';return;}hitsEl.innerHTML=h.map((d,i)=>'<li><button type="button" data-i="'+i+'" class="flex w-full flex-col items-start px-3 py-2 text-left hover:bg-slate-50"><span class="text-sm font-medium">'+esc(d.issue)+'</span><span class="text-[11px]" style="color:var(--muted)">'+esc((d.threat?"Opposing idea · ":"")+d.area+" · "+L(d.lens).label+" · "+d.level)+'</span></button></li>').join("");hitsEl.querySelectorAll("button").forEach(b=>b.onclick=()=>pick(h[+b.dataset.i]));}
+function pick(d){areaId=d.area_id;if(!inLevel(d,level))level="all";lens=d.lens;selected=d.id;query="";qEl.value="";renderHits();sync();document.getElementById("detail").scrollIntoView({behavior:"smooth",block:"start"});}
+qEl.oninput=()=>{query=qEl.value;renderHits();};
+document.addEventListener("mousedown",e=>{if(!qEl.parentElement.contains(e.target)){hitsEl.classList.add("hidden");}});
+
+function bar(v){return v==null?'':'<div class="ready-bar" aria-hidden="true"><span style="width:'+v+'%"></span></div>';}
+function spread(list){const pts=list.map(d=>({id:d.id,x:rx(d),y:d.y}));for(let p=0;p<5;p++)for(let i=0;i<pts.length;i++)for(let j=0;j<i;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy)||0.3;if(d>=6)continue;const k=(6-d)/2;pts[i].x+=dx/d*k;pts[i].y+=dy/d*k;pts[j].x-=dx/d*k;pts[j].y-=dy/d*k;}const o={};pts.forEach(p=>o[p.id]={x:Math.min(98,Math.max(2,p.x)),y:Math.min(98,Math.max(2,p.y))});return o;}
+
+function paintMatrix(){
+  const all=inArea(),list=view(),m=document.getElementById("matrix"),l=L(lens);
+  document.getElementById("unpolled").innerHTML="";
+  if(!list.length){m.innerHTML='<div class="rounded-2xl border p-6 text-sm" style="border-color:var(--border);color:var(--muted)">'+(G.dots.some(d=>d.area_id===areaId&&d.lens===lens)?"Nothing here at this level. Try all levels.":"No "+l.noun+" for "+areaName(areaId)+" yet. Try another lens.")+'</div>';return;}
+  const pos=spread(list);
+  const quads=l.quads.map((q,i)=>'<div class="quad" style="'+QPOS[i]+'"><div class="text-xs font-semibold" style="color:var(--muted)">'+esc(q)+'</div></div>').join("");
+  const showAll=list.length<=6;
+  const dots=list.map(d=>{const p=pos[d.id],on=d.id===selected,side=p.x>60?"right:26px":"left:26px";return '<button type="button" class="dot '+lens+(d.threat?" threat":"")+(on?" on":"")+'" data-id="'+esc(d.id)+'" style="left:'+p.x+'%;bottom:'+p.y+'%;z-index:'+(on?20:10)+'" aria-label="'+esc((d.threat?"Opposing idea. ":"")+d.issue+". Money at stake "+d.y+". Likely to happen "+rx(d))+'"><span class="mk"></span>'+((on||showAll)?'<span class="chip-lbl'+(on?" font-semibold":"")+'" style="'+side+'">'+esc(d.issue)+'</span>':"")+'</button>';}).join("");
+  m.innerHTML='<div class="relative min-h-[22rem] overflow-hidden rounded-2xl border sm:min-h-[30rem]" style="border-color:var(--border);background:var(--surface)">'+quads+'<div class="ylab">More money at stake <span aria-hidden="true">&rarr;</span></div>'+
+  '<div class="pointer-events-none absolute inset-y-8 left-1/2 w-px" style="background:var(--border)"></div><div class="pointer-events-none absolute inset-x-8 top-1/2 h-px" style="background:var(--border)"></div>'+
+  '<div class="absolute inset-8">'+dots+'</div></div>'+
+  '<div class="mt-1 flex justify-between px-8 text-[10px] font-medium sm:text-xs" style="color:var(--muted)"><span>'+l.lo+'</span><span>'+l.hi+'</span></div>'+
+  (TH.length?'<div class="legend"><span><i></i>Action we back</span><span><i class="t"></i>Opposing idea</span></div>':'');
+  m.querySelectorAll(".dot").forEach(b=>b.onclick=()=>{selected=b.dataset.id;paintMatrix();paintDetail();setUrl();});
+}
+
+
+const LINKHEAD={
+ practical:{structural:"Rules that make this change possible",cultural:"Values behind this change"},
+ structural:{cultural:"Values behind this rule",practical:"Practical changes this rule unlocks"},
+ cultural:{structural:"Rules this value backs",practical:"Practical changes this value leads to"}};
+const LEVELNOTE={Local:"Decided by one city or county, the easiest level to win.",State:"Decided by one state legislature.",Federal:"Needs Congress or a federal agency, the hardest level to win."};
+function byId(id){return G.dots.find(x=>x.id===id);}
+function title(d){return d.lens==="structural"?d.change:d.issue;}
+function sec(t,body){return '<section class="mt-6"><h3 class="text-[11px] font-semibold uppercase tracking-widest" style="color:var(--muted)">'+t+'</h3>'+body+'</section>';}
+function srcs(list){return list.length?'<ul class="srcs">'+list.map(s=>'<li><span class="yr">'+(s.year||"")+'</span><span>'+(s.u?'<a href="'+esc(s.u)+'" target="_blank" rel="noopener" class="underline">'+esc(s.t)+'</a>':esc(s.t))+'</span></li>').join("")+'</ul>':'';}
+function prompt(el){el.innerHTML='<p class="prompt">Click a dot to see the action, what the action means for family budgets, how likely the change is, and the connected actions.</p>';}
+const TODO="Junto Nova can help with the research, strategy, fundraising, campaign or governance behind this change.";
+const TODO_T="Junto Nova can help with the research, strategy, fundraising, campaign or governance behind the answer to this idea.";
+function card(t,score,body){return '<section class="card"><div class="card-h"><h3>'+t+'</h3>'+(score?'<span class="sc">'+score+'</span>':'')+'</div><div class="card-b">'+body+'</div></section>';}
+function confRow(c){return c?'<div class="conf-row"><span>Confidence:</span><span class="lv '+c.level+'">'+c.level+'</span><span>'+esc(c.why.replace(/^(High|Medium|Low) because /,"Because "))+'</span></div>':'';}
+function fund(t){return t?'<p class="fund"><b>Research we could do next:</b> '+esc(t)+' <a href="involved.html">Talk about more research &rarr;</a></p>':'';}
+function pollBlock(d){
+  const ps=(d.polls&&d.polls.length?d.polls:(d.poll_detail?[d.poll_detail]:[])),head=d.lens==="practical"?"Polling on the rule behind this change":"Polling";
+  if(!ps.length){
+    if(d.lens==="structural")return lab(head)+'<p class="pq">No public poll found on this rule.</p>';
+    return d.poll_note?lab(head)+'<div class="pq"><p>'+esc(d.poll_note)+'</p></div>':'';
+  }
+  // Key finding stays visible; each poll is a collapsed row, so ten polls stay tidy.
+  const row=p=>{const who=esc(p.pollster)+(p.sponsor?', paid for by '+esc(p.sponsor)+(p.sponsor_advocacy?', a group with a stake in the answer':''):'');
+    const hd=esc(p.result)+(p.pollster?', '+esc(p.pollster):'')+(p.date?', '+esc(p.date):'');
+    return '<details class="pq-acc"><summary><span class="pq-h"><b>'+hd+'</b></span><span class="acc-plus" aria-hidden="true"></span></summary><div class="pq-body">'+
+    '<p class="'+(p.question_exact?'pq-text':'')+'">'+(p.question_exact?'&ldquo;'+esc(p.question)+'&rdquo;':'<b>Asked about:</b> '+esc(p.question))+'</p>'+
+    '<dl class="pq-meta"><dt>Result</dt><dd>'+esc(p.result)+'</dd><dt>Pollster</dt><dd>'+who+'</dd>'+(p.date?'<dt>When</dt><dd>'+esc(p.date)+'</dd>':'')+(p.sample?'<dt>Sample</dt><dd>'+esc(p.sample)+'</dd>':'')+'</dl>'+
+    (p.scope_note?'<p class="pq-note">'+esc(p.scope_note)+'</p>':'')+
+    (p.url?'<a class="pq-src underline" href="'+esc(p.url)+'" target="_blank" rel="noopener">Read the poll</a>':'')+'</div></details>';};
+  return lab(head)+'<div class="pq"><p><b>Key finding.</b> '+esc(ps[0].finding)+'</p>'+ps.map(row).join('')+'</div>';
+}
+function lkBtn(t,d){return '<button type="button" class="lk'+(t.threat?' threat':'')+'" data-id="'+esc(t.id)+'"><span class="k">'+(t.threat?'Opposing idea · ':'')+esc(L(t.lens).label)+(t.area_id!==d.area_id?' · '+esc(t.area):'')+(t.where?' · '+esc(t.where):'')+'</span><span class="t">'+esc(title(t))+'</span></button>';}
+function lab(t){return '<h4 class="mt-3 text-[11px] font-semibold uppercase tracking-widest" style="color:var(--muted)">'+t+'</h4>';}
+function paintDetail(){
+  const d=byId(selected), el=document.getElementById("detail");
+  el.classList.remove("hidden");
+  if(!d){prompt(el);return;}
+  const l=L(d.lens);
+  // 1. The action
+  const natl=/^(United States|Nationwide)/.test(d.where||"");
+  let c1='<div class="text-[11px] font-semibold uppercase tracking-widest" style="color:'+(d.threat?'#8B1E2D':'var(--muted)')+'">'+(d.threat?'Opposing idea · ':'')+esc(d.area)+' · '+esc(l.label)+': '+esc(l.q.toLowerCase())+' · '+esc(d.level==="Any"?"Every level":d.level)+(d.where?' · '+esc(d.where):"")+'</div>'+
+    '<h2 class="display mt-1 text-2xl">'+esc(title(d))+'</h2>'+
+    (d.effect?'<p class="mt-2 text-base leading-relaxed">'+esc(d.effect)+'</p>':'')+
+    (d.members&&d.members.length?'<p class="mt-2 text-xs leading-relaxed" style="color:var(--muted)">The same rule also stands in: '+esc(d.members.join("; "))+'.</p>':"")+
+    (d.threat&&d.why_watch?'<p class="watch"><b>Why watch.</b> '+esc(d.why_watch)+'</p>':'')+
+    '<div class="mt-3"><span class="pill"><b>'+esc(quadName(d))+'</b></span></div>'+
+    '<div class="todo"><b style="color:var(--charcoal)">What to do.</b> '+(d.threat?TODO_T:TODO)+'<br><a href="index.html#faq-hire" class="btn-dark">Work with Junto Nova</a></div>';
+  let html=card(d.threat?"The opposing idea":"The action","",c1);
+  // 2. Bottom line
+  const f=[],mo=d.money;
+  // One figure per dot, the same everywhere: the sentence, then how we got the figure.
+  if(mo){f.push('<b>'+esc(mo.lead)+'</b> '+esc(mo.rest));f.push('<b>How we got this figure.</b> '+esc(mo.how));}
+  else f.push('<b>No dollar figure yet.</b> No study we found puts a dollar figure on this '+(d.lens==="cultural"?'value or the rule behind it.':d.threat?'idea.':'change.'));
+  if(d.lens!=="cultural"){
+    if(d.reach!=null)f.push('<b>'+Math.round(d.reach*100)+' percent</b> of households'+(natl?' across the country':d.where?' in '+esc(d.where):'')+' would see this '+(mo&&/keep|earn|gain/.test(mo.verb)?'gain':'saving')+'.');
+    if(d.ownership===20)f.push('Raises what families earn or own, not only what they pay.');
+    else if(d.ownership===10)f.push('Lowers the price of something families own, like a home.');
+  }
+  html+=card("Bottom line",'Money at stake <b>'+d.y+'</b> of 100','<ul class="facts">'+f.map(x=>'<li>'+x+'</li>').join("")+'</ul>'+((d.evidence_sources||[]).length?lab("Evidence, newest first")+srcs(d.evidence_sources):'')+confRow(d.conf_money)+fund(d.ask_money));
+  // 3. Likely to happen
+  const k=[],noPrec=!d.precedent_note||/^no precedent/i.test(d.precedent_note);
+  if(d.lens!=="cultural"){
+    if(d.lens==="structural"&&d.actor)k.push('<b>Who has to act.</b> '+esc(d.actor.line));
+    if(!noPrec)k.push('<b>'+(d.lens==="practical"?"Where the rules already allow this change.":"Already done somewhere.")+'</b> '+esc(d.precedent_note)+'.');
+    else if(d.lens==="structural")k.push('<b>Done elsewhere.</b> Not yet, in any place we found.');
+    if(d.lens==="structural"&&d.opposition_note)k.push('<b>'+(d.threat?'Who stands against this idea.':'Who defends the current rule.')+'</b> '+esc(d.opposition_note)+'.');
+    if(d.lens==="structural"&&d.parts&&d.parts.ease)d.parts.ease.filter(e=>/^Extra hurdle/.test(e[0])).forEach(e=>k.push('<b>Extra hurdle.</b> '+esc(e[0].replace(/^Extra hurdle:\s*/,"").replace(/^./,c=>c.toUpperCase()))+'.'));
+  }
+  html+=card("Likely to happen",'Likely to happen <b>'+rx(d)+'</b> of 100',(k.length?'<ul class="facts">'+k.map(x=>'<li>'+x+'</li>').join("")+'</ul>':'')+pollBlock(d)+confRow(d.conf_likely)+fund(d.ask_likely));
+  // 4. Connected actions
+  const lk=(d.links||[]).filter(x=>byId(x.id)&&!byId(x.id).threat||d.threat&&byId(x.id));
+  let body;
+  if(d.threat){
+    const own=lk.filter(x=>byId(x.id).threat),ag=lk.filter(x=>!byId(x.id).threat);
+    body=(ag.length?'<h4 class="mt-3 text-sm font-semibold">Actions this idea works against</h4><div class="links">'+ag.map(x=>lkBtn(byId(x.id),d)).join('')+'</div>':'')+
+      (own.length?'<h4 class="mt-3 text-sm font-semibold">'+(d.lens==="cultural"?"Opposing rules this value backs":"Opposing values behind this idea")+'</h4><div class="links">'+own.map(x=>lkBtn(byId(x.id),d)).join('')+'</div>':'')||
+      '<p class="mt-2 text-sm" style="color:var(--muted)">No action on the grid is tied to this idea yet.</p>';
+  } else {
+  if(!lk.length)body='<p class="mt-2 text-sm" style="color:var(--muted)">'+(d.lens==="practical"?"Families can make this change under today's rules, and no value is tied to the change yet.":"No other action is tied to this "+(d.lens==="structural"?"rule":"value")+" yet.")+'</p>';
+  else body=Object.entries(LINKHEAD[d.lens]).map(([ln,h])=>{const g=lk.filter(x=>byId(x.id).lens===ln);if(!g.length)return"";return '<h4 class="mt-3 text-sm font-semibold">'+h+'</h4><div class="links">'+g.map(x=>{const t=byId(x.id),vr=x.via&&byId(x.via);return '<button type="button" class="lk" data-id="'+esc(t.id)+'"><span class="k">'+esc(L(t.lens).label)+(t.area_id!==d.area_id?' · '+esc(t.area):'')+(t.where?' · '+esc(t.where):'')+'</span><span class="t">'+esc(title(t))+'</span>'+(vr?'<span class="v">Through the rule: '+esc(title(vr))+'</span>':'')+'</button>';}).join("")+'</div>';}).join("");
+  if((d.watch||[]).length)body+='<h4 class="mt-3 text-sm font-semibold" style="color:#8B1E2D">Opposing ideas to watch</h4><div class="links">'+d.watch.map(id=>lkBtn(byId(id),d)).join('')+'</div>';
+  }
+  html+=card("Connected actions","",body);
+  el.innerHTML=html;
+  el.querySelectorAll(".lk").forEach(b=>b.onclick=()=>pick(byId(b.dataset.id)));
+}
+
+function setUrl(){try{const u=new URL(location.href);/*portal*/u.searchParams.set("area",areaId);u.searchParams.set("level",level);u.searchParams.set("lens",lens);if(selected)u.searchParams.set("dot",selected);else u.searchParams.delete("dot");history.replaceState(null,"",u);}catch(e){}}
+function sync(){
+  areaEl.value=areaId;paintLevelOptions();
+  const lz=L(lens);qEl.placeholder=lz.find;qEl.setAttribute("aria-label",lz.find);
+  lensesEl.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lens===lens?"true":"false"));
+  const list=view();
+  if(selected&&!list.some(d=>d.id===selected))selected=null;
+  paintMatrix();paintDetail();setUrl();
+}
+let rt=0;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(paintMatrix,150);});
+sync();
+</script>
+</body>
+</html>

@@ -343,3 +343,7 @@ h1{font-size:1.7rem;margin:0 0 .5rem;overflow-wrap:anywhere}
 .name-actions{display:flex;justify-content:flex-end;align-items:center;gap:.5rem}
 .name-actions .btn.tiny{width:auto;min-width:44px;min-height:44px;padding:0 1.1rem;margin:0}
 .link-btn.plain{width:auto;margin:0;padding:0 .75rem;text-decoration:none;color:var(--charcoal)}
+
+/* Client research privacy */
+.pill.on{background:#C45C26;color:#fff;border-color:#C45C26}.privacy{margin-top:.75rem;padding:.75rem;border:1px solid #E2E8F0;border-radius:.75rem;display:grid;gap:.4rem}.privacy .chips button[disabled]{opacity:.6;cursor:default}.audit{margin-top:.4rem;display:grid;gap:.25rem;font-size:.8rem;color:#475569;padding-left:1rem;list-style:disc}
+.portal-tabs a.grid-tab{flex:0 0 auto;display:inline-flex;align-items:center;white-space:nowrap;min-height:44px;padding:0 .8rem;border-bottom:2px solid transparent;font-size:.875rem;font-weight:500;color:var(--muted)}.portal-tabs a.grid-tab:hover{color:var(--charcoal)}.portal-tabs a.grid-tab:focus-visible{outline:2px solid var(--ember);outline-offset:-2px}

@@ -1,24 +1,16 @@
-/* Ease-versus-everyday-impact chart shared by issues.html and the client portal.
-   The markup, quad labels, and chip placement match the public issues page. */
+/* Money at stake versus likely to happen chart for the client portal.
+   The axes and quad labels match the public /issues grid. */
 (function (global) {
   "use strict";
   var QUAD_POS = ["top-3 left-3 text-left", "top-3 right-3 text-right", "bottom-3 left-3 text-left", "bottom-3 right-3 text-right"];
-  function axes(xl, xh, xp, tl, tr, bl, br) {
-    return {
-      yh: "Felt a lot", yl: "Felt a little", xl: xl, xh: xh, xp: xp, yp: "Felt in daily life",
-      quads: [["Make viable", tl, QUAD_POS[0]], ["Do first", tr, QUAD_POS[1]], ["Avoid", bl, QUAD_POS[2]], ["Optional", br, QUAD_POS[3]]],
-    };
-  }
-  var EASE = axes("Hard to change", "Easy to change", "Ease of change",
-    "Hard to change, and felt in daily life.", "Easy to change, and felt in daily life.",
-    "Hard to change, and felt only a little.", "Easy to change, and felt only a little.");
-  var MATRIX = {
-    practical: EASE,
-    structural: EASE,
-    cultural: axes("Few hold it", "Widely held", "How widely held",
-      "Few hold it, and it is felt in daily life.", "Widely held, and felt in daily life.",
-      "Few hold it, and felt only a little.", "Widely held, and felt only a little."),
+  /* Same axes and quadrant names as the public /issues grid: up = money at stake for families,
+     right = more likely to happen. Values use poll share as their likely to happen score. */
+  var SAME = {
+    yh: "More money at stake", yl: "Less money at stake", yp: "Money at stake",
+    xl: "Less likely", xh: "More likely to happen", xp: "Likely to happen",
+    quads: [["Big money, hard to win", "The biggest wins take the most work.", QUAD_POS[0]], ["Big money, likely to happen", "Start here.", QUAD_POS[1]], ["Smaller money, hard to win", "Last in line.", QUAD_POS[2]], ["Smaller money, likely to happen", "Fast, modest gains.", QUAD_POS[3]]],
   };
+  var MATRIX = { practical: SAME, structural: SAME, cultural: SAME };
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return c === "&" ? "&amp;" : c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&quot;";

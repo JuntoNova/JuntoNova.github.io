@@ -39,6 +39,31 @@ try {
   }
 } catch (e) {}
 
+/* The 11 issue areas, in the same order as the charts, the /issues grid and every form.
+   data/grid-data.js (window.GRID) is the one source; the list below is the fallback. */
+var AREA_NAMES = ["Housing", "Personal taxes", "Transportation", "Social Security and retirement", "Food", "Healthcare", "Utilities", "Childcare and education", "Wages", "Starting a business", "Owning something"];
+function areaNames() {
+  var g = window.GRID;
+  return g && g.areas && g.areas.length ? g.areas.map(function (a) { return a.name; }) : AREA_NAMES.slice();
+}
+/* Staff add issues only from the 11 areas, so the portal can never drift from the public site. */
+function issueCreateForm() {
+  var have = {};
+  (room.issues || []).forEach(function (issue) { have[issue.name] = true; });
+  var left = areaNames().filter(function (n) { return !have[n]; });
+  if (!left.length) return "";
+  return '<form class="form" data-form="issue"><label>Issue area<select id="n-issue" required><option value="">Choose an area</option>' +
+    left.map(function (n) { return '<option value="' + esc(n) + '">' + esc(n) + "</option>"; }).join("") +
+    '</select></label><button class="btn" type="submit">Add issue</button></form>';
+}
+/* Issues show in the order of the 11 areas. */
+function sortIssues(list) {
+  var order = areaNames();
+  return (list || []).slice().sort(function (a, b) {
+    var i = order.indexOf(a.name), j = order.indexOf(b.name);
+    return (i < 0 ? 99 : i) - (j < 0 ? 99 : j);
+  });
+}
 function esc(s) {
   return String(s || "").replace(/[&<>"']/g, function (c) {
     if (c === "&") return "&" + "amp;";
@@ -274,7 +299,7 @@ function sectionLabel(id) { return id[0].toUpperCase() + id.slice(1); }
 function nav() {
   return sections().map(function (id) {
     return '<button type="button" data-act="view" data-view="' + id + '" class="' + (view === id ? "active" : "") + '"' + (view === id ? ' aria-current="page"' : "") + ">" + sectionLabel(id) + "</button>";
-  }).join("");
+  }).join("") + '<a class="grid-tab" href="portal-grid.html' + (previewKind() ? "?preview=" + encodeURIComponent(previewKind()) : "") + '">Issue grid</a>';
 }
 function paintMenu() {
   var slot = document.getElementById("portal-menu");
@@ -322,7 +347,7 @@ function issueDrawer() {
   var name = current ? current.name : "Issue";
   var button = '<button type="button" class="drawer-btn" data-act="issue-drawer" aria-expanded="' + (issueOpen ? "true" : "false") + '">' + esc(name) + "</button>";
   if (!issueOpen) return '<div class="drawer">' + button + "</div>";
-  var list = (room.issues || []).map(function (issue) {
+  var list = sortIssues(room.issues).map(function (issue) {
     var on = current && issue.id === current.id;
     return '<button type="button" data-act="idea" data-id="' + esc(issue.id) + '" class="' + (on ? "active" : "") + '"' + (on ? ' aria-current="true"' : "") + ">" + esc(issue.name) + "</button>";
   }).join("");
@@ -405,9 +430,9 @@ function clientAssign(item) {
 function scoreFields(item) {
   if (!room.staff) return "";
   var axisHeld = item.scoreAxis === "how widely held";
-  var xLabel = axisHeld ? "How widely held" : "Ease";
+  var xLabel = axisHeld ? "Share who agree in a poll" : "Likely to happen (0 to 100)";
   var xVal = axisHeld ? item.held : item.ease;
-  return '<form class="form scores" data-form="scores" data-id="' + esc(item.id) + '"><div class="row2"><label>' + xLabel + '<input id="score-x" inputmode="numeric" value="' + (xVal == null ? "" : esc(String(xVal))) + '"></label><label>Impact<input id="score-y" inputmode="numeric" value="' + (item.impact == null ? "" : esc(String(item.impact))) + '"></label></div></form>';
+  return '<form class="form scores" data-form="scores" data-id="' + esc(item.id) + '"><div class="row2"><label>' + xLabel + '<input id="score-x" inputmode="numeric" value="' + (xVal == null ? "" : esc(String(xVal))) + '"></label><label>Money at stake (0 to 100)<input id="score-y" inputmode="numeric" value="' + (item.impact == null ? "" : esc(String(item.impact))) + '"></label></div></form>';
 }
 function staffAddForm() {
   var options = (room.issues || []).map(function (issue) {
@@ -523,7 +548,7 @@ function submitIdeaForm(issue) {
 function ideasPage() {
   var list = room.issues || [];
   var main = '<h1 class="display">Ideas</h1>' + issueDrawer();
-  if (!list.length) return main + '<p class="muted">Nothing here yet.</p>' + (room.staff ? '<form class="form" data-form="issue"><label>Issue<input id="n-issue" required></label><button class="btn" type="submit">Add issue</button></form>' : "");
+  if (!list.length) return main + '<p class="muted">Nothing here yet.</p>' + (room.staff ? issueCreateForm() : "");
   var issue = currentIssue();
   /* Ideas with no lens never vanish: "No lens" lists them, and the default view also shows them
      to staff and to the person who submitted them. */
@@ -539,7 +564,7 @@ function ideasPage() {
   if (!visible.length) body = '<section class="lens-block">' + lensSelect() + '<p class="muted">Nothing here yet.</p>' + add + "</section>";
   var composer = room.staff && addingItem ? staffAddForm() : "";
   var remove = room.staff ? '<p class="mt-s"><button type="button" class="btn ghost" data-act="remove-issue" data-id="' + esc(issue.id) + '">Remove issue</button></p>' : "";
-  var create = room.staff ? '<form class="form" data-form="issue"><label>Issue<input id="n-issue" required></label><button class="btn" type="submit">Add issue</button></form>' : "";
+  var create = room.staff ? issueCreateForm() : "";
   return main + '<div id="issue-grid" class="jn-grid"></div>' + composer + body + (room.staff ? "" : submitIdeaForm(issue)) + remove + create;
 }
 function table(headers, rows) {
@@ -557,6 +582,61 @@ function docTable(section) {
     return ['<button type="button" data-act="open" data-id="' + esc(doc.id) + '"><b>' + esc(doc.title) + "</b></button>", esc(who)];
   }));
 }
+/* Client research privacy (see junto-nova/portal-privacy-spec.md).
+   A client's research is seen only by that client and Junto Nova staff. The client picks Private or
+   Public and, when Public, Named or Hidden source (Hidden is the default). Andrew's switch
+   (admin role) is on by default and his off wins. An item shows on the public site only when the
+   client chose Public and Andrew's switch is on. Every change goes in an append-only history. */
+function clientResearch(doc) { return doc.section === "research" && Boolean(doc.orgId) && Boolean(doc.privacy); }
+function publicNow(doc) { return doc.privacy.client === "public" && doc.privacy.admin !== false; }
+function publicReason(doc) {
+  var p = doc.privacy;
+  if (p.client !== "public") return "The client keeps this research private.";
+  if (p.admin === false) return "The client chose public, and Andrew turned public viewing off.";
+  return p.source === "named" ? "Public, with the client's name." : "Public, with the source hidden.";
+}
+function seg(act, id, current, pairs, enabled) {
+  return '<div class="chips" role="group">' + pairs.map(function (pr) {
+    var on = current === pr[0];
+    return '<button type="button" data-act="' + act + '" data-id="' + esc(id) + '" data-val="' + pr[0] + '" class="' + (on ? "active" : "") + '" aria-pressed="' + (on ? "true" : "false") + '"' + (enabled ? "" : " disabled") + ">" + pr[1] + "</button>";
+  }).join("") + "</div>";
+}
+var AUDIT_FIELD = { client: "Client choice", source: "Source", admin: "Andrew's public switch" };
+var AUDIT_VAL = { "private": "Private", "public": "Public", named: "Named", hidden: "Hidden", on: "On", off: "Off" };
+function auditList(doc) {
+  var rows = (doc.privacy.audit || []).slice().reverse();
+  if (!rows.length) return "";
+  return '<details class="mt-s"><summary class="muted">History (' + rows.length + ')</summary><ul class="audit">' + rows.map(function (a) {
+    return "<li><b>" + esc(a.at) + "</b> · " + esc(a.who) + " · " + esc(AUDIT_FIELD[a.field] || a.field) + ": " + esc(AUDIT_VAL[a.from] || a.from) + " to " + esc(AUDIT_VAL[a.to] || a.to) + "</li>";
+  }).join("") + "</ul></details>";
+}
+function researchCard(doc) {
+  if (!clientResearch(doc)) return offerCard(doc);
+  var p = doc.privacy, isClient = !room.staff;
+  var org = room.staff ? '<p class="kicker">' + esc((room.orgs || {})[doc.orgId] || "") + "</p>" : "";
+  var live = publicNow(doc);
+  var status = '<p class="mt-s"><span class="pill' + (live ? " on" : "") + '">' + (live ? "On the public site" : "Not public") + '</span> <span class="muted">' + esc(publicReason(doc)) + "</span></p>";
+  var controls = '<div class="privacy"><div class="kicker">Who can see this research</div>' + seg("rp-client", doc.id, p.client, [["private", "Private"], ["public", "Public"]], isClient) +
+    (p.client === "public" ? '<div class="kicker mt-s">Source on the public site</div>' + seg("rp-source", doc.id, p.source, [["hidden", "Hidden"], ["named", "Show our name"]], isClient) : "") +
+    (isClient ? "" : '<p class="muted mt-s">Only the client can change these two choices.</p>') +
+    (isAdmin() ? '<label class="switch mt-s"><input type="checkbox" data-rp-admin="' + esc(doc.id) + '"' + (p.admin !== false ? " checked" : "") + '><span>Allow public viewing (Andrew)</span></label>' : (room.staff ? '<p class="muted">Andrew\'s public switch: ' + (p.admin !== false ? "On" : "Off") + "</p>" : "")) +
+    "</div>";
+  return '<article class="card mb-m">' + org + '<h2 class="display t-card">' + esc(doc.title) + "</h2>" +
+    (doc.body ? '<p class="muted pre">' + esc(doc.body) + "</p>" : "") + status + controls + auditList(doc) + "</article>";
+}
+/* What the public feed would carry: only items passing the rule, with the source per the client's choice.
+   Organization names appear only for Named items; people never appear. */
+function publicFeedItems() {
+  return docs("research").filter(function (d) { return clientResearch(d) && publicNow(d); }).map(function (d) {
+    return { title: d.title, summary: d.publicSummary || "", source: d.privacy.source === "named" ? ((room.orgs || {})[d.orgId] || "") : "A Junto Nova client" };
+  });
+}
+function feedPreview() {
+  if (!room.staff) return "";
+  var rows = publicFeedItems();
+  return '<div class="card mb-l"><div class="kicker">Public site preview</div><p class="muted">Exactly what the public site would show from client research right now.</p>' +
+    (rows.length ? table(["Research", "Source shown"], rows.map(function (r) { return ["<b>" + esc(r.title) + "</b>" + (r.summary ? '<div class="file-meta">' + esc(r.summary) + "</div>" : ""), esc(r.source)]; })) : '<p class="muted">Nothing from client research is public.</p>') + "</div>";
+}
 function offerCard(doc) {
   var bits = [];
   if (doc.city) bits.push(esc(doc.city));
@@ -566,7 +646,7 @@ function offerCard(doc) {
   return '<article class="card mb-m"><h2 class="display t-card">' + esc(doc.title) + "</h2>" +
     (bits.length ? "<p><b>" + bits.join(" · ") + "</b></p>" : "") +
     (doc.body ? '<p class="muted pre">' + esc(doc.body) + "</p>" : "") +
-    (link ? '<p class="mt-m"><a class="btn" href="' + link + '" target="_blank" rel="noopener noreferrer">Fund this</a></p>' : "") +
+    (link ? '<p class="mt-m"><a class="btn" href="' + link + '" target="_blank" rel="noopener noreferrer">Talk about this research</a></p>' : "") +
     (doc.hasFile ? '<p class="mt-s"><button class="btn ghost" type="button" data-act="open" data-id="' + esc(doc.id) + '">Open file</button></p>' : "") +
     "</article>";
 }
@@ -581,12 +661,12 @@ function addForm(section) {
   if (!room.staff) return "";
   var offer = section === "proposals" || section === "research";
   var extra = offer
-    ? '<label>City<input id="d-city" placeholder="Phoenix"></label><label>Dates<input id="d-when" placeholder="March 12–14"></label><label>Cost<input id="d-cost" placeholder="$18,500" required></label><label>Link to fund it<input id="d-link" type="url" placeholder="https://"></label>'
+    ? '<label>City<input id="d-city" placeholder="Phoenix"></label><label>Dates<input id="d-when" placeholder="March 12–14"></label><label>Cost<input id="d-cost" placeholder="$18,500" required></label><label>Link to talk about this research<input id="d-link" type="url" placeholder="https://"></label>'
     : "";
-  return '<form class="form" data-form="doc" data-section="' + esc(section) + '"><div class="kicker">' + (offer ? "Add something they can fund" : "Add a document") + '</div><label>' + (offer ? "What" : "Title") + '<input id="d-title" required placeholder="' + (offer ? "Focus group" : "") + '"></label>' + extra +
+  return '<form class="form" data-form="doc" data-section="' + esc(section) + '"><div class="kicker">' + (offer ? "Add research they could talk to us about" : "Add a document") + '</div><label>' + (offer ? "What" : "Title") + '<input id="d-title" required placeholder="' + (offer ? "Focus group" : "") + '"></label>' + extra +
     '<label>Who can see it<select id="d-vis"><option value="clients">All clients</option><option value="org" selected>This organization</option><option value="director">Director</option><option value="board">Board</option><option value="billing">Billing</option></select></label>' +
     '<div id="d-org-wrap"><label>Organization<select id="d-org" required>' + orgOptions(true) + '</select></label><label>New organization name<input id="d-org-name" placeholder="Only if you chose New organization"></label></div>' +
-    '<label>Comment<textarea id="d-body" rows="4" placeholder="' + (offer ? "What they get, and why it is worth funding." : "") + '"></textarea></label><label>File, if there is one<input id="d-file" type="file"></label><button class="btn" type="submit">' + (offer ? "Post this" : "Save document") + "</button></form>";
+    '<label>Comment<textarea id="d-body" rows="4" placeholder="' + (offer ? "What they get, and why the research is worth doing." : "") + '"></textarea></label><label>File, if there is one<input id="d-file" type="file"></label><button class="btn" type="submit">' + (offer ? "Post this" : "Save document") + "</button></form>";
 }
 function syncOrgWrap() {
   var vis = document.getElementById("d-vis");
@@ -642,8 +722,8 @@ function page() {
     main = ideasPage();
   } else {
     var titles = { proposals: "Proposals", research: "Research", billing: "Billing" };
-    var list = view === "proposals" || view === "research" ? (docs(view).map(offerCard).join("") || '<p class="muted">Nothing posted yet.</p>') : docTable(view);
-    main = '<div class="kicker">' + esc(org) + '</div><h1 class="display">' + titles[view] + "</h1>" + (view === "research" ? disclosureBlock() : "") + list + addForm(view);
+    var list = view === "proposals" || view === "research" ? (docs(view).map(view === "research" ? researchCard : offerCard).join("") || '<p class="muted">Nothing posted yet.</p>') : docTable(view);
+    main = '<div class="kicker">' + esc(org) + '</div><h1 class="display">' + titles[view] + "</h1>" + (view === "research" ? disclosureBlock() + feedPreview() : "") + list + addForm(view);
   }
   if (reading) {
     var download = "";
@@ -979,6 +1059,13 @@ async function toggleClient(itemId, orgId, checked) {
   openItem = itemId;
   render();
 }
+/* The server must check the role: only the client's own users may set client and source,
+   and only the admin role may set Andrew's switch. The page only hides what a person can't change. */
+async function setPrivacy(id, field, value) {
+  var data = await api({ action: "setResearchPrivacy", id: id, field: field, value: value });
+  if (!takeRoom(data)) return;
+  render();
+}
 async function setItemPublic(id, on) {
   var data = await api({ action: "setItemPublic", id: id, on: on });
   if (!takeRoom(data)) return;
@@ -1107,6 +1194,7 @@ document.addEventListener("click", function (event) {
     clientSaved = "";
     render();
   }
+  else if (act === "rp-client" || act === "rp-source") setPrivacy(target.getAttribute("data-id"), act === "rp-client" ? "client" : "source", target.getAttribute("data-val")).catch(fail);
   else if (act === "remove-item") removeIdeaItem(target.getAttribute("data-id")).catch(fail);
   else if (act === "remove-issue") removeIdeaIssue(target.getAttribute("data-id")).catch(fail);
 });
@@ -1138,6 +1226,9 @@ document.addEventListener("change", function (event) {
   if (event.target && event.target.hasAttribute && event.target.hasAttribute("data-public")) {
     setItemPublic(event.target.getAttribute("data-public"), event.target.checked).catch(fail);
   }
+  if (event.target && event.target.hasAttribute && event.target.hasAttribute("data-rp-admin")) {
+    setPrivacy(event.target.getAttribute("data-rp-admin"), "admin", event.target.checked ? "on" : "off").catch(fail);
+  }
   if (event.target && event.target.hasAttribute && event.target.hasAttribute("data-client")) {
     toggleClient(event.target.getAttribute("data-client"), event.target.getAttribute("data-org"), event.target.checked).catch(fail);
   }
@@ -1162,34 +1253,62 @@ function previewKind() {
   try {
     var host = location.hostname;
     var asked = new URLSearchParams(location.search).get("preview") || "";
-    /* TEST SITE: always sample data. ?preview=client shows the client view; staff is the default. */
-    if (host === "juntonova.github.io") return asked === "client" ? "client" : "staff";
-    if (host !== "localhost" && host !== "127.0.0.1") return "";
-    return asked;
+    /* Only the live domain talks to portal-api. The test site, the dev copy and any other host
+       always run on sample data. ?preview=client shows the client view; staff is the default. */
+    if (/(^|\.)juntonova\.com$/.test(host)) return "";
+    if (host === "localhost" || host === "127.0.0.1") return asked;
+    return asked === "client" ? "client" : "staff";
   } catch (e) { return ""; }
 }
 function previewItem(id, title, type, status, lens, ease, impact) {
-  return { id: id, issueId: "issue-energy", type: type, status: status, lens: lens, title: title, body: "", ease: ease, impact: impact, evidence: "", empiricism: "", source: "staff", sourceUrls: [], own: false, publicState: "private" };
+  return { id: id, issueId: "issue-housing", type: type, status: status, lens: lens, title: title, body: "", ease: ease, impact: impact, evidence: "", empiricism: "", source: "staff", sourceUrls: [], own: false, publicState: "private" };
+}
+/* Sample data comes from the same file as the public /issues grid (data/grid-data.js), so the
+   portal shows the same 11 areas and the same actions, scores and wording. ease = likely to
+   happen (x), impact = money at stake (y), held = poll share for values. */
+function previewIssues() {
+  var g = window.GRID || { areas: [], dots: [] };
+  var areas = g.areas.length ? g.areas : areaNames().map(function (n) { return { id: n.toLowerCase().replace(/[^a-z]+/g, "-"), name: n }; });
+  return areas.map(function (a) {
+    var items = (g.dots || []).filter(function (d) { return d.area_id === a.id; }).map(function (d) {
+      var held = d.lens === "cultural";
+      return {
+        id: d.id, issueId: "issue-" + a.id, type: "idea", status: "vetted", lens: d.lens,
+        title: d.lens === "structural" ? (d.change || d.issue) : d.issue, body: d.effect || "",
+        ease: held ? null : d.x, impact: d.y, held: held ? d.x : null, scoreAxis: held ? "how widely held" : "ease",
+        evidence: d.precedent_note || "", empiricism: "", source: "staff",
+        sourceUrls: (d.evidence_sources || []).concat(d.poll_sources || []).filter(function (x) { return x.u; }).slice(0, 4).map(function (x) { return { url: x.u, label: x.t }; }),
+        own: false, publicState: "published",
+      };
+    });
+    return { id: "issue-" + a.id, slug: a.id, name: a.name, notes: "", drive: "", items: items };
+  });
+}
+/* Sample client research. Real items would come from the portal server, already filtered so a
+   client only ever receives its own organization's research. */
+function previewResearch(staff) {
+  function a(at, who, field, from, to) { return { at: at, who: who, field: field, from: from, to: to }; }
+  var all = [
+    { id: "R1", section: "research", orgId: "orgA", title: "Houston focus groups on smaller lots", body: "Six groups of Houston homeowners and renters on homes built closer together with smaller yards.", publicSummary: "Houston families on homes built closer together with smaller yards.",
+      privacy: { client: "public", source: "hidden", admin: true, audit: [a("2026-11-10 15:02 UTC", "Ada Client", "client", "private", "public")] } },
+    { id: "R2", section: "research", orgId: "orgA", title: "Survey of home business owners", body: "What city rules stop people from running a business out of their home.",
+      privacy: { client: "private", source: "hidden", admin: true, audit: [] } },
+    { id: "R3", section: "research", orgId: "orgB", title: "Power bill study, three Texas cities", body: "What families pay for power, and how much of the bill is fees and charges.", publicSummary: "What families pay for power in three Texas cities.",
+      privacy: { client: "public", source: "named", admin: false, audit: [a("2026-11-08 18:40 UTC", "Contoso user", "client", "private", "public"), a("2026-11-08 18:41 UTC", "Contoso user", "source", "hidden", "named"), a("2026-11-09 09:15 UTC", "Andrew Clark", "admin", "on", "off")] } },
+  ];
+  return staff ? all : all.filter(function (d) { return d.orgId === "orgA"; });
 }
 function previewRoom(kind) {
-  var energy = [
-    Object.assign(previewItem("E1", "Time-of-use rates", "idea", "vetted", "practical", 74, 80), { publicState: "published", body: "Charge more when the grid is busy, and less when it is not.", evidence: "Several utilities already bill this way.", empiricism: "cited", stance: "Back", sourceUrls: [{ url: "https://example.test/time-of-use", label: "Utility tariff study" }], publicClearedBy: { id: "staff", name: "Staff One", email: "staff@example.test" }, publicClearedAt: "2026-03-02", publicClearNote: "Cleared for the public list." }),
-    previewItem("E2", "Block a new fuel tax", "opposition", "untested", "practical", 40, 70),
-    previewItem("E3", "Who writes the grid rules", "idea", "untested", "structural", null, null),
-    Object.assign(previewItem("E4", "How widely the cost is felt", "idea", "vetted", "cultural", null, 60), { publicState: "queued", held: 55, scoreAxis: "how widely held", stance: "Watch" }),
-    Object.assign(previewItem("E5", "A second structural change", "idea", "untested", "structural", 20, 30), { publicState: "queued" }),
-    previewItem("E6", "Ask the co-op first", "idea", "untested", "", 40, 50),
-  ];
-  var housing = [
-    { id: "staff-starter-commission", issueId: "issue-housing", type: "idea", status: "untested", lens: "practical", title: "Real estate commission rates", body: "", ease: null, impact: null, evidence: "", empiricism: "", source: "staff", sourceUrls: [] },
-    { id: "staff-starter-agents", issueId: "issue-housing", type: "idea", status: "untested", lens: "practical", title: "Number of real estate agents per transaction or market", body: "", ease: null, impact: null, evidence: "", empiricism: "", source: "staff", sourceUrls: [] },
-    { id: "staff-starter-title-fees", issueId: "issue-housing", type: "idea", status: "untested", lens: "practical", title: "Title company cut and fees", body: "", ease: null, impact: null, evidence: "", empiricism: "", source: "staff", sourceUrls: [] },
-    { id: "staff-starter-forced-agent", issueId: "issue-housing", type: "idea", status: "untested", lens: "structural", title: "Laws and rules that effectively force buyers and sellers to use a real estate agent and title company", body: "", ease: null, impact: null, evidence: "", empiricism: "", source: "staff", sourceUrls: [] },
-  ];
+  var issues = previewIssues();
+  var housing = issues.filter(function (i) { return i.id === "issue-housing"; })[0];
+  /* Two staff ideas not yet public, to show the publishing gate. */
+  if (housing) housing.items.push(
+    { id: "staff-starter-commission", issueId: "issue-housing", type: "idea", status: "untested", lens: "practical", title: "Real estate commission rates", body: "", ease: null, impact: null, evidence: "", empiricism: "", source: "staff", sourceUrls: [], publicState: "private" },
+    Object.assign(previewItem("staff-starter-forced-agent", "Laws that force buyers and sellers to use a real estate agent and title company", "idea", "vetted", "structural", 35, 40), { publicState: "queued" })
+  );
   var staff = kind === "staff";
-  var issues = staff
-    ? [{ id: "issue-energy", slug: "energy", name: "Energy", notes: "", drive: "", items: energy }, { id: "issue-housing", slug: "housing", name: "Housing", notes: "", drive: "", items: housing }]
-    : [{ id: "issue-energy", slug: "energy", name: "Energy", items: energy.slice(0, 2).map(function (item) { return Object.assign({}, item, { own: false }); }) }];
+  var clientIds = housing ? housing.items.filter(function (i) { return i.lens === "practical" && i.publicState === "published"; }).slice(0, 2).map(function (i) { return i.id; }) : [];
+  if (!staff) issues = housing ? [{ id: housing.id, slug: housing.slug, name: housing.name, items: housing.items.filter(function (i) { return clientIds.indexOf(i.id) >= 0; }) }] : [];
   return {
     access: "ok",
     email: staff ? "staff@example.test" : "ada@example.test",
@@ -1197,9 +1316,9 @@ function previewRoom(kind) {
     person: { id: staff ? "staff" : "ada", name: staff ? "Staff One" : "Ada Client", email: staff ? "staff@example.test" : "ada@example.test", role: staff ? "admin" : "director", billing: false, orgId: staff ? null : "orgA", orgName: staff ? "" : "Example Org A" },
     orgs: staff ? { orgA: "Example Org A", orgB: "Contoso" } : { orgA: "Example Org A" },
     disclosures: {},
-    documents: [],
+    documents: previewResearch(staff),
     issues: issues,
-    assignments: staff ? [{ orgId: "orgA", issueId: "issue-energy", itemIds: ["E1", "E2"] }] : undefined,
+    assignments: staff ? [{ orgId: "orgA", issueId: "issue-housing", itemIds: clientIds }] : undefined,
     directory: staff ? [{ id: "ada", name: "Ada Client", email: "ada@example.test", role: "director", billing: false, orgId: "orgA" }] : undefined,
   };
 }
@@ -1328,6 +1447,21 @@ function previewMutate(body) {
     previewStore();
     return room;
   }
+  if (action === "setResearchPrivacy") {
+    var me = room.person || {};
+    (room.documents || []).forEach(function (doc) {
+      if (doc.id !== body.id || !doc.privacy) return;
+      var p = doc.privacy, f = body.field;
+      if ((f === "client" || f === "source") && (room.staff || me.orgId !== doc.orgId)) return;
+      if (f === "admin" && me.role !== "admin") return;
+      var before = f === "admin" ? (p.admin === false ? "off" : "on") : p[f];
+      if (before === body.value) return;
+      if (f === "admin") p.admin = body.value === "on"; else p[f] = body.value;
+      var now = new Date();
+      p.audit = (p.audit || []).concat([{ at: now.toISOString().slice(0, 16).replace("T", " ") + " UTC", who: me.name || me.email || "", field: f, from: before, to: body.value }]);
+    });
+    return room;
+  }
   if (action === "setItemPublic") {
     (room.issues || []).forEach(function (issue) {
       (issue.items || []).forEach(function (item) {
@@ -1392,7 +1526,7 @@ function boot() {
     room = previewRoom(preview);
     previewApply(preview);
     view = "ideas";
-    ideaIssue = "issue-energy";
+    ideaIssue = "issue-housing";
     render();
     return;
   }
