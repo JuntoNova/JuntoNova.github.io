@@ -175,7 +175,7 @@
    "2016": 123335,
    "2019": 145022,
    "2022": 199822,
-   "2025": 204365
+   "2025": 204337
   },
   "growth": 1.11,
   "likely": {
@@ -189,7 +189,7 @@
    "2050": 344440
   },
   "base_year": 2025,
-  "growth_note": "Likely assumes median net worth grows at the same real rate as family income since 1984 (1.11% a year); the 2016 to 2025 survey run (5.8% a year) includes a boom and is too short to extend."
+  "growth_note": "Likely assumes median net worth grows at the same real rate as family income since 1984 (1.11% a year); the 2016 to 2025 survey run (5.7% a year) includes a boom and is too short to extend."
  },
  "childcare_2023_dollars": {
   "1984": 909,

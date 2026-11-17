@@ -619,7 +619,7 @@ function researchCard(doc) {
   var controls = '<div class="privacy"><div class="kicker">Who can see this research</div>' + seg("rp-client", doc.id, p.client, [["private", "Private"], ["public", "Public"]], isClient) +
     (p.client === "public" ? '<div class="kicker mt-s">Source on the public site</div>' + seg("rp-source", doc.id, p.source, [["hidden", "Hidden"], ["named", "Show our name"]], isClient) : "") +
     (isClient ? "" : '<p class="muted mt-s">Only the client can change these two choices.</p>') +
-    (isAdmin() ? '<label class="switch mt-s"><input type="checkbox" data-rp-admin="' + esc(doc.id) + '"' + (p.admin !== false ? " checked" : "") + '><span>Allow public viewing (Andrew)</span></label>' : (room.staff ? '<p class="muted">Andrew\'s public switch: ' + (p.admin !== false ? "On" : "Off") + "</p>" : "")) +
+    (isAdmin() ? '<label class="switch mt-s"><input type="checkbox" data-rp-admin="' + esc(doc.id) + '"' + (p.admin !== false ? " checked" : "") + '><span>Allow public viewing (Junto Nova admin)</span></label>' : (room.staff ? '<p class="muted">Andrew\'s public switch: ' + (p.admin !== false ? "On" : "Off") + "</p>" : "")) +
     "</div>";
   return '<article class="card mb-m">' + org + '<h2 class="display t-card">' + esc(doc.title) + "</h2>" +
     (doc.body ? '<p class="muted pre">' + esc(doc.body) + "</p>" : "") + status + controls + auditList(doc) + "</article>";
@@ -1294,7 +1294,7 @@ function previewResearch(staff) {
     { id: "R2", section: "research", orgId: "orgA", title: "Survey of home business owners", body: "What city rules stop people from running a business out of their home.",
       privacy: { client: "private", source: "hidden", admin: true, audit: [] } },
     { id: "R3", section: "research", orgId: "orgB", title: "Power bill study, three Texas cities", body: "What families pay for power, and how much of the bill is fees and charges.", publicSummary: "What families pay for power in three Texas cities.",
-      privacy: { client: "public", source: "named", admin: false, audit: [a("2026-11-08 18:40 UTC", "Contoso user", "client", "private", "public"), a("2026-11-08 18:41 UTC", "Contoso user", "source", "hidden", "named"), a("2026-11-09 09:15 UTC", "Andrew Clark", "admin", "on", "off")] } },
+      privacy: { client: "public", source: "named", admin: false, audit: [a("2026-11-08 18:40 UTC", "Contoso user", "client", "private", "public"), a("2026-11-08 18:41 UTC", "Contoso user", "source", "hidden", "named"), a("2026-11-09 09:15 UTC", "Junto Nova admin", "admin", "on", "off")] } },
   ];
   return staff ? all : all.filter(function (d) { return d.orgId === "orgA"; });
 }

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://juntonova.com/methodology">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Methodology · Junto Nova</title>
 <meta name="description" content="How Junto Nova places every action on the issues grid: money at stake for families, and how likely the change is to happen.">
@@ -11,7 +12,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1A1A1A">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<link rel="stylesheet" href="jn-polish.css">
+<link rel="stylesheet" href="jn-polish.css?v=20261117b">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap');
 :root{--charcoal:#1A1A1A;--ember:#C45C26;--muted:#64748B;--border:#E2E8F0;--surface:#F8FAFC;--paper:#F0E6D3}
@@ -95,6 +96,7 @@ details summary{cursor:pointer}
 .prompt{border:1px dashed #94A3B8;border-radius:1rem;padding:1rem 1.1rem;color:var(--muted);font-size:.95rem;text-align:center}
 #main p,#main li,#main dd{max-width:none}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 <a class="jn-skip" href="#main">Skip to main content</a>
@@ -111,7 +113,7 @@ details summary{cursor:pointer}
 <a href="index.html#about">About Us</a>
 <a href="index.html#costs">Your Bottom Line</a>
 <a href="issues.html">Issues</a>
-<a href="https://juntonova.github.io/ventures">Ventures</a>
+<a href="/ventures">Ventures</a>
 <a href="portal.html">Client login</a>
 <a href="project.html">Let's work together</a>
 </nav>
@@ -130,10 +132,11 @@ document.addEventListener('click',function(e){if(open()&&!m.contains(e.target)&&
 <main id="main" class="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-16">
 <p class="text-sm"><a href="issues.html" class="underline" style="color:var(--muted)">&larr; Back to the issues grid</a></p>
 <h1 class="display mt-2 text-3xl sm:text-4xl">Methodology</h1>
+<p class="mt-3 text-base leading-relaxed" style="color:#334155;max-width:44rem">Every dot gets two scores: how much money families stand to gain, and how likely the change is to happen. Here is the math.</p>
 <div class="mt-6 rounded-2xl border p-5 md:p-6" style="border-color:var(--border);background:var(--surface)">
 <div class="mt-4 grid gap-6 text-sm leading-relaxed md:grid-cols-2" style="color:#334155">
 <div>
-<h3 class="font-semibold" style="color:var(--charcoal)">Up: money at stake for families (0 to 100)</h3>
+<h3 class="display text-lg" style="color:var(--charcoal)">Up: money at stake for families (0 to 100)</h3>
 <p class="mt-1">What families would gain if the change happens: lower costs, higher income or more assets. For a value, money at stake comes from the rule the value supports. For a proposal or a practical change, three parts, added up:</p>
 <ul class="mt-2 list-disc space-y-1 pl-5">
 <li><b>Dollars, up to 50.</b> Money per affected household per year. $10 scores 5, $100 scores 20, $1,000 scores 35, $10,000 or more scores 50. Each tenfold rise adds 15 points, so big numbers don't drown out the rest.</li>
@@ -144,25 +147,33 @@ document.addEventListener('click',function(e){if(open()&&!m.contains(e.target)&&
 <p class="mt-2">One time costs are spread over 30 years for a home and about 10 years for fees and training. We never add figures that overlap.</p>
 </div>
 <div>
-<h3 class="font-semibold" style="color:var(--charcoal)">Right: how likely the change is to happen (0 to 100)</h3>
+<h3 class="display text-lg" style="color:var(--charcoal)">Right: how likely the change is to happen (0 to 100)</h3>
 <p class="mt-2"><b>Cultural: a value to stand for.</b> The share who agree in a public poll.</p>
-<p class="mt-2"><b>Structural: a rule to change.</b> Every proposal starts at 50, then moves by who has to act, hardest first: a constitutional amendment minus 45, an act of Congress minus 25, a federal agency rule minus 10, an executive order minus 5, a state legislature or a statewide ballot vote +5, a state agency rule +10, a local ballot vote +15, a city or county council +20. So, other things equal, a local change scores more likely than a state change, and a state change more likely than a federal one. Done somewhere already +15. Poll support of 55 percent or more +15, under 45 percent minus 15. Strong organized opposition minus 15, moderate minus 5. Extra hurdles like 60 Senate votes or a supermajority minus 10.</p>
+<p class="mt-2"><b>Structural: a rule to change.</b> Every proposal starts at 50, then moves by who has to act, hardest first: a constitutional amendment minus 45, an act of Congress minus 25, a federal agency rule minus 10, an executive order minus 5, a state legislature or a statewide ballot vote plus 5, a state agency rule plus 10, a local ballot vote plus 15, a city or county council plus 20. So, other things equal, a local change scores more likely than a state change, and a state change more likely than a federal one. Done somewhere already plus 15. Poll support of 55 percent or more plus 15, under 45 percent minus 15. Strong organized opposition minus 15, moderate minus 5. Extra hurdles like 60 Senate votes or a supermajority minus 10.</p>
 <p class="mt-2"><b>Practical: a change that moves the money now.</b> Set by where the rules already allow the change and whether people already make the change there.</p>
 </div>
 </div>
 </div>
 
 <div class="mt-6 rounded-2xl border p-5 md:p-6 text-sm leading-relaxed" style="border-color:var(--border);background:var(--surface);color:#334155">
-<h2 class="font-semibold" style="color:var(--charcoal)">Two confidence ratings</h2>
+<h2 class="display text-lg" style="color:var(--charcoal)">Two confidence ratings</h2>
 <p class="mt-2"><b>Bottom line.</b> Rates the dollar evidence only. High when one source states the dollar figure. Medium when the math combines published numbers. Low when at least one input has no published number, or no figure exists. The card names that input. A value takes the rating of the action the value backs.</p>
 <p class="mt-2"><b>Likely to happen.</b> Rates the feasibility evidence only. For a value: High with an independent poll, Medium when an interested group paid for the poll or the poll asked a nearby question. For a proposal or a practical change: High when the change already happened somewhere and an independent poll measured support, Medium with one of those or with a precedent plus a sponsored poll, Low otherwise.</p>
 </div>
 </main>
 
 <footer class="jn-foot" style="border-top:1px solid #E2E8F0">
+<style>.jn-foot a{color:inherit;text-decoration:none}.jn-foot a:hover{opacity:.7}</style>
 <div style="max-width:64rem;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;font-size:.875rem;color:#64748B">
 <div><div class="display" style="font-size:1.125rem;color:#1A1A1A">JUNTO NOVA</div><div style="font-size:.75rem;margin-top:.25rem">Junto Nova LLC · Dallas, TX</div></div>
-<div style="display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem"><a href="data/grid-scores.csv" style="color:inherit">Download the scores (CSV)</a><span>© 2026</span></div>
-</div></footer>
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.25rem">
+<a href="mailto:info@juntonova.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+<a href="https://x.com/JuntoNov" target="_blank" rel="noopener" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+<a href="https://juntonova.substack.com" target="_blank" rel="noopener" aria-label="Substack"><i class="fa-solid fa-bookmark"></i></a>
+<a href="/ventures">Ventures</a>
+<a href="/involved">Get Involved</a>
+<a href="/privacy">Privacy</a>
+<a href="data/grid-scores.csv" style="color:inherit">Download the scores (CSV)</a><span>© 2026</span>
+</div></div></footer>
 </body>
 </html>

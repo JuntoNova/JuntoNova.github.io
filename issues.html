@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://juntonova.com/issues">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Issues · Junto Nova</title>
 <meta name="description" content="Changes that lower what families pay or raise what they earn and own, placed by how much money they move and how easy they are to make.">
@@ -11,7 +12,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1A1A1A">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-<link rel="stylesheet" href="jn-polish.css">
+<link rel="stylesheet" href="jn-polish.css?v=20261117b">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap');
 :root{--charcoal:#1A1A1A;--ember:#C45C26;--muted:#64748B;--border:#E2E8F0;--surface:#F8FAFC;--paper:#F0E6D3}
@@ -35,14 +36,14 @@ select.ctl{height:2.75rem;padding:0 2.25rem 0 .9rem;width:100%;appearance:none;-
 .dot.on .mk{background:var(--ember);border-color:var(--ember)}
 /* One text width on this page: every line runs the width of its box (overrides the 50ch reading measure). */
 #main p,#main li,#main dd,#detail p,#detail li{max-width:none}
-.dot.threat .mk{width:12px;height:12px;border-radius:2px;transform:rotate(45deg);border-color:#8B1E2D;background:#8B1E2D}
+.dot.threat .mk{width:12px;height:12px;border-radius:2px;transform:rotate(45deg);border-color:var(--charcoal);background:var(--charcoal)}
 .dot.threat.on .mk{background:var(--ember);border-color:var(--ember)}
 .legend{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem;justify-content:center;margin-top:.6rem;font-size:.8rem;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:.45rem}
 .legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--charcoal);border-radius:50%;background:#fff}
-.legend i.t{width:10px;height:10px;border-radius:2px;transform:rotate(45deg);border-color:#8B1E2D;background:#8B1E2D}
-.watch{margin-top:.75rem;border-left:3px solid #8B1E2D;padding:.1rem 0 .1rem .8rem;font-size:.95rem;line-height:1.55}
-.lk.threat .k{color:#8B1E2D}
+.legend i.t{width:10px;height:10px;border-radius:2px;transform:rotate(45deg);border-color:var(--charcoal);background:var(--charcoal)}
+.watch{margin-top:.75rem;border-left:3px solid var(--charcoal);padding:.1rem 0 .1rem .8rem;font-size:.95rem;line-height:1.55}
+.lk.threat .k{color:var(--charcoal)}
 .chip-lbl{position:absolute;top:50%;transform:translateY(-50%);white-space:nowrap;max-width:13rem;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.3;background:rgba(255,255,255,.95);padding:1px 6px;border-radius:6px;pointer-events:none}
 .pill{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.25rem .7rem;font-size:.75rem;background:var(--surface);color:var(--muted)}
 .pill b{color:var(--charcoal);font-weight:600}
@@ -134,6 +135,7 @@ details summary{cursor:pointer}
 .todo{margin-top:.9rem;border-radius:.75rem;background:var(--surface);padding:.8rem .9rem;font-size:.9rem;line-height:1.55;color:#334155}
 .btn-dark{display:inline-flex;margin-top:.7rem;border-radius:.75rem;background:var(--charcoal);color:#fff;font-weight:600;font-size:.875rem;padding:.6rem 1.1rem}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 <a class="jn-skip" href="#main">Skip to main content</a>
@@ -150,7 +152,7 @@ details summary{cursor:pointer}
 <a href="index.html#about">About Us</a>
 <a href="index.html#costs">Your Bottom Line</a>
 <a href="issues.html" aria-current="page">Issues</a>
-<a href="https://juntonova.github.io/ventures">Ventures</a>
+<a href="/ventures">Ventures</a>
 <a href="portal.html">Client login</a>
 <a href="project.html">Let's work together</a>
 </nav>
@@ -172,15 +174,13 @@ document.addEventListener('click',function(e){if(open()&&!m.contains(e.target)&&
 <details class="acc-row" name="grid-help">
 <summary><span>Why change is hard</span><span class="acc-plus" aria-hidden="true"></span></summary>
 <div class="acc-body space-y-2">
-<p>Helping Americans own their future means changing the status quo.</p>
-<p>That change has to show up in families' bills, their paychecks and what they own.</p>
-<p>Changing the status quo is hard, because change happens in three different ways: what people believe (cultural), the rules they live by (structural), and what shows up in their budget (practical). They go together, but they aren't the same thing.</p>
-<p>Change that lasts takes all three: people who want the change, a rule that allows the change, and money families can see. Junto Nova shows you where each issue stands on all three, and what has to change on each one before families see the money.</p>
+<p>Owning your future takes two things: lower bills and bigger paychecks. Rules get in the way of both.</p>
+<p>To change a rule, three things have to move: what people believe, the law itself, and what families actually see in their budget. The grid shows where each issue stands.</p>
 <h3 class="pt-2 text-xs font-semibold uppercase tracking-widest" style="color:var(--muted)">For example: minimum lot sizes</h3>
 <dl class="ex-rows mt-2">
 <div><dt><span class="shape diamond"></span>Cultural</dt><dd>Families should be able to buy the kind of home that's best for them.</dd></div>
 <div><dt><span class="shape"></span>Structural</dt><dd>End minimum lot size rules.</dd></div>
-<div><dt><span class="shape circle"></span>Practical</dt><dd>In Houston, families can buy a home on a smaller lot for about $205,000 less.</dd></div>
+<div><dt><span class="shape circle"></span>Practical</dt><dd>In Houston, the median new small lot townhouse sold for about $205,000 less than the median of other new homes. The two are different kinds of homes, not one home on two lot sizes.</dd></div>
 </dl>
 </div>
 </details>
@@ -227,12 +227,20 @@ document.addEventListener('click',function(e){if(open()&&!m.contains(e.target)&&
 </main>
 
 <footer class="jn-foot" style="border-top:1px solid #E2E8F0">
+<style>.jn-foot a{color:inherit;text-decoration:none}.jn-foot a:hover{opacity:.7}</style>
 <div style="max-width:64rem;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;font-size:.875rem;color:#64748B">
 <div><div class="display" style="font-size:1.125rem;color:#1A1A1A">JUNTO NOVA</div><div style="font-size:.75rem;margin-top:.25rem">Junto Nova LLC · Dallas, TX</div></div>
-<div style="display:flex;flex-wrap:wrap;align-items:center;gap:1.25rem"><a href="data/grid-scores.csv" style="color:inherit">Download the scores (CSV)</a><span>© 2026</span></div>
-</div></footer>
+<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.25rem">
+<a href="mailto:info@juntonova.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+<a href="https://x.com/JuntoNov" target="_blank" rel="noopener" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+<a href="https://juntonova.substack.com" target="_blank" rel="noopener" aria-label="Substack"><i class="fa-solid fa-bookmark"></i></a>
+<a href="/ventures">Ventures</a>
+<a href="/involved">Get Involved</a>
+<a href="/privacy">Privacy</a>
+<a href="data/grid-scores.csv" style="color:inherit">Download the scores (CSV)</a><span>© 2026</span>
+</div></div></footer>
 
-<script src="data/grid-data.js?v=20261116e"></script>
+<script src="data/grid-data.js?v=20261117a"></script>
 <script>
 const G = window.GRID;
 // Opposing ideas load only on the portal grid. The public /issues page never loads threat-data.js.
@@ -343,7 +351,7 @@ function paintDetail(){
   const l=L(d.lens);
   // 1. The action
   const natl=/^(United States|Nationwide)/.test(d.where||"");
-  let c1='<div class="text-[11px] font-semibold uppercase tracking-widest" style="color:'+(d.threat?'#8B1E2D':'var(--muted)')+'">'+(d.threat?'Opposing idea · ':'')+esc(d.area)+' · '+esc(l.label)+': '+esc(l.q.toLowerCase())+' · '+esc(d.level==="Any"?"Every level":d.level)+(d.where?' · '+esc(d.where):"")+'</div>'+
+  let c1='<div class="text-[11px] font-semibold uppercase tracking-widest" style="color:'+(d.threat?'var(--charcoal)':'var(--muted)')+'">'+(d.threat?'Opposing idea · ':'')+esc(d.area)+' · '+esc(l.label)+': '+esc(l.q.toLowerCase())+' · '+esc(d.level==="Any"?"Every level":d.level)+(d.where?' · '+esc(d.where):"")+'</div>'+
     '<h2 class="display mt-1 text-2xl">'+esc(title(d))+'</h2>'+
     (d.effect?'<p class="mt-2 text-base leading-relaxed">'+esc(d.effect)+'</p>':'')+
     (d.members&&d.members.length?'<p class="mt-2 text-xs leading-relaxed" style="color:var(--muted)">The same rule also stands in: '+esc(d.members.join("; "))+'.</p>':"")+
@@ -383,7 +391,7 @@ function paintDetail(){
   } else {
   if(!lk.length)body='<p class="mt-2 text-sm" style="color:var(--muted)">'+(d.lens==="practical"?"Families can make this change under today's rules, and no value is tied to the change yet.":"No other action is tied to this "+(d.lens==="structural"?"rule":"value")+" yet.")+'</p>';
   else body=Object.entries(LINKHEAD[d.lens]).map(([ln,h])=>{const g=lk.filter(x=>byId(x.id).lens===ln);if(!g.length)return"";return '<h4 class="mt-3 text-sm font-semibold">'+h+'</h4><div class="links">'+g.map(x=>{const t=byId(x.id),vr=x.via&&byId(x.via);return '<button type="button" class="lk" data-id="'+esc(t.id)+'"><span class="k">'+esc(L(t.lens).label)+(t.area_id!==d.area_id?' · '+esc(t.area):'')+(t.where?' · '+esc(t.where):'')+'</span><span class="t">'+esc(title(t))+'</span>'+(vr?'<span class="v">Through the rule: '+esc(title(vr))+'</span>':'')+'</button>';}).join("")+'</div>';}).join("");
-  if((d.watch||[]).length)body+='<h4 class="mt-3 text-sm font-semibold" style="color:#8B1E2D">Opposing ideas to watch</h4><div class="links">'+d.watch.map(id=>lkBtn(byId(id),d)).join('')+'</div>';
+  if((d.watch||[]).length)body+='<h4 class="mt-3 text-sm font-semibold" style="color:var(--charcoal)">Opposing ideas to watch</h4><div class="links">'+d.watch.map(id=>lkBtn(byId(id),d)).join('')+'</div>';
   }
   html+=card("Connected actions","",body);
   el.innerHTML=html;

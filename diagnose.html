@@ -331,11 +331,11 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
 <a class="jn-skip" href="#main">Skip to main content</a>
 <div style="background:#1A1A1A;color:#fff;font-size:11px;letter-spacing:.08em;text-align:center;padding:6px 12px">STAGING</div>
   <header>
-    <a href="https://juntonova.com" class="logo">
+    <a href="/" class="logo">
       <img src="jn-header.png" alt="Junto Nova" width="40" height="46" />
       <span>JUNTO NOVA</span>
     </a>
-    <a href="https://juntonova.com/#services" class="back">← Back to services</a>
+    <a href="/project" class="back">← Back to services</a>
   </header>
 
   <main id="main">
@@ -347,11 +347,16 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
 
     <div class="issue-bar" id="issueBar">
       <button class="issue-btn" data-issue="housing">Housing</button>
-      <button class="issue-btn" data-issue="taxes">Personal taxes</button>
+      <button class="issue-btn" data-issue="personal-taxes">Personal taxes</button>
       <button class="issue-btn" data-issue="transportation">Transportation</button>
+      <button class="issue-btn" data-issue="social-security">Social Security and retirement</button>
+      <button class="issue-btn" data-issue="food">Food</button>
       <button class="issue-btn" data-issue="healthcare">Healthcare</button>
-      <button class="issue-btn" data-issue="energy">Utilities</button>
-      <button class="issue-btn active" data-issue="education">Childcare and education</button>
+      <button class="issue-btn" data-issue="utilities">Utilities</button>
+      <button class="issue-btn active" data-issue="childcare-education">Childcare and education</button>
+      <button class="issue-btn" data-issue="wages">Wages</button>
+      <button class="issue-btn" data-issue="starting-a-business">Starting a business</button>
+      <button class="issue-btn" data-issue="owning-something">Owning something</button>
     </div>
 
     <div class="continuum">
@@ -371,6 +376,7 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
           <div class="r-label">Reality</div>
         </div>
       </div>
+      <p class="unmapped" id="unmapped" hidden style="margin-top:12px;font-size:14px;color:#64748B">We have not mapped this area yet. <a href="/project" style="color:inherit;text-decoration:underline">Talk about more research</a>.</p>
     </div>
 
     <section>
@@ -498,18 +504,25 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
 
   <script>
     const issues = {
-      education: { public: [42, 48], political: [22, 40], reality: 14 },
+      "childcare-education": { public: [42, 48], political: [22, 40], reality: 14 },
       housing: { public: [28, 45], political: [25, 38], reality: 32 },
       transportation: { public: [30, 40], political: [28, 34], reality: 36 },
-      energy: { public: [35, 42], political: [30, 35], reality: 40 },
+      utilities: { public: [35, 42], political: [30, 35], reality: 40 },
       healthcare: { public: [20, 50], political: [18, 32], reality: 12 },
-      taxes: { public: [25, 40], political: [30, 28], reality: 48 }
+      "personal-taxes": { public: [25, 40], political: [30, 28], reality: 48 }
     };
     const pub = document.getElementById("pubRange");
     const pol = document.getElementById("polRange");
     const real = document.getElementById("reality");
     function setIssue(key) {
       const d = issues[key];
+      const none = !d;
+      document.getElementById("unmapped").hidden = !none;
+      [pub, pol, real].forEach(el => { el.style.visibility = none ? "hidden" : "visible"; });
+      document.querySelectorAll(".issue-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.issue === key);
+      });
+      if (none) return;
       pub.style.left = d.public[0] + "%";
       pub.style.width = d.public[1] + "%";
       pol.style.left = d.political[0] + "%";
@@ -524,7 +537,7 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
       if (!btn) return;
       setIssue(btn.dataset.issue);
     });
-    setIssue("education");
+    setIssue("childcare-education");
   </script>
 </body>
 </html>
