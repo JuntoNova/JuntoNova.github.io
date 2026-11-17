@@ -5,7 +5,9 @@
 /issues.html /issues 301
 /ventures.html /ventures 301
 /privacy.html /privacy 301
-/diagnose.html /diagnose 301
+/diagnose.html /bottom-line 301
+/diagnose /bottom-line 301
+/bottom-line.html /bottom-line 301
 /strategy.html /strategy 301
 /capital.html /capital 301
 /organization.html /organization 301
@@ -20,7 +22,8 @@
 /project/ /project 301
 /involved/ /involved 301
 /how/ /how 301
-/diagnose/ /diagnose 301
+/diagnose/ /bottom-line 301
+/bottom-line/ /bottom-line 301
 /strategy/ /strategy 301
 /capital/ /capital 301
 /organization/ /organization 301
