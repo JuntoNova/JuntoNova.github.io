@@ -127,6 +127,11 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
     }
     .ends .left { color: #777; font-weight: 500; }
     .ends .right { color: var(--charcoal); }
+    .ends .left, .ends .right { white-space: nowrap; }
+    @media (max-width: 639px) {
+      .continuum .ends { flex-direction: column; gap: 4px; }
+      .continuum .ends .right { align-self: flex-end; }
+    }
     .track {
       position: relative;
       height: 96px;
@@ -361,8 +366,8 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
 
     <div class="continuum">
       <div class="ends">
-        <span class="left">Leaves families worse off ←</span>
-        <span class="right">→ Leaves families better off</span>
+        <span class="left">← Leaves families worse off</span>
+        <span class="right">Leaves families better off →</span>
       </div>
       <div class="track">
         <div class="range range-public" id="pubRange">
