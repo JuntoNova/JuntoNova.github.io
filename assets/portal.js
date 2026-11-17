@@ -299,7 +299,7 @@ function sectionLabel(id) { return id[0].toUpperCase() + id.slice(1); }
 function nav() {
   return sections().map(function (id) {
     return '<button type="button" data-act="view" data-view="' + id + '" class="' + (view === id ? "active" : "") + '"' + (view === id ? ' aria-current="page"' : "") + ">" + sectionLabel(id) + "</button>";
-  }).join("") + '<a class="grid-tab" href="portal-grid.html' + (previewKind() ? "?preview=" + encodeURIComponent(previewKind()) : "") + '">Issue grid</a>';
+  }).join("");
 }
 function paintMenu() {
   var slot = document.getElementById("portal-menu");
@@ -1253,11 +1253,10 @@ function previewKind() {
   try {
     var host = location.hostname;
     var asked = new URLSearchParams(location.search).get("preview") || "";
-    /* Only the live domain talks to portal-api. The test site, the dev copy and any other host
-       always run on sample data. ?preview=client shows the client view; staff is the default. */
-    if (/(^|\.)juntonova\.com$/.test(host)) return "";
+    /* Sample data runs only on a developer's own machine. Every public host, including the
+       test site, shows the sign-in screen and nothing else. */
     if (host === "localhost" || host === "127.0.0.1") return asked;
-    return asked === "client" ? "client" : "staff";
+    return "";
   } catch (e) { return ""; }
 }
 function previewItem(id, title, type, status, lens, ease, impact) {
@@ -1284,18 +1283,11 @@ function previewIssues() {
     return { id: "issue-" + a.id, slug: a.id, name: a.name, notes: "", drive: "", items: items };
   });
 }
-/* Sample client research. Real items would come from the portal server, already filtered so a
-   client only ever receives its own organization's research. */
+/* No sample research ships with the site. Real items come from the portal server, already
+   filtered so a client only ever receives its own organization's research. */
 function previewResearch(staff) {
   function a(at, who, field, from, to) { return { at: at, who: who, field: field, from: from, to: to }; }
-  var all = [
-    { id: "R1", section: "research", orgId: "orgA", title: "Houston focus groups on smaller lots", body: "Six groups of Houston homeowners and renters on homes built closer together with smaller yards.", publicSummary: "Houston families on homes built closer together with smaller yards.",
-      privacy: { client: "public", source: "hidden", admin: true, audit: [a("2026-11-10 15:02 UTC", "Ada Client", "client", "private", "public")] } },
-    { id: "R2", section: "research", orgId: "orgA", title: "Survey of home business owners", body: "What city rules stop people from running a business out of their home.",
-      privacy: { client: "private", source: "hidden", admin: true, audit: [] } },
-    { id: "R3", section: "research", orgId: "orgB", title: "Power bill study, three Texas cities", body: "What families pay for power, and how much of the bill is fees and charges.", publicSummary: "What families pay for power in three Texas cities.",
-      privacy: { client: "public", source: "named", admin: false, audit: [a("2026-11-08 18:40 UTC", "Contoso user", "client", "private", "public"), a("2026-11-08 18:41 UTC", "Contoso user", "source", "hidden", "named"), a("2026-11-09 09:15 UTC", "Junto Nova admin", "admin", "on", "off")] } },
-  ];
+  var all = [];
   return staff ? all : all.filter(function (d) { return d.orgId === "orgA"; });
 }
 function previewRoom(kind) {
