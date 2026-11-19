@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>:focus-visible{outline:2px solid #1A1A1A;outline-offset:2px}
 html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</style>
-  <title>Build the strategy · Junto Nova</title>
+  <title>Strategy · Junto Nova</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -16,7 +16,7 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
   <meta name="theme-color" content="#1A1A1A">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <meta name="description" content="A plan with numbers, targets, and a clear path to capital or political support, mapped across the continuum from cost-raising to cost-lowering policy.">
+  <meta name="description" content="A plan with numbers and next steps you can act on right away.">
   <style>
     :root {
       --charcoal: #1a1a1a;
@@ -213,20 +213,23 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
       text-decoration: none;
     }
     .footer-links a:hover { color: var(--charcoal); }
+    .steps { list-style: none; counter-reset: s; display: grid; gap: 14px; margin-top: 18px; }
+    .steps li { counter-increment: s; position: relative; padding-left: 40px; color: var(--muted); }
+    .steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--charcoal); color: #fff; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
   </style>
   <link rel="canonical" href="https://juntonova.com/strategy">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Junto Nova">
-  <meta property="og:title" content="Build the strategy · Junto Nova">
-  <meta property="og:description" content="A plan with numbers, targets, and a clear path to capital or political support, mapped across the continuum from cost-raising to cost-lowering policy.">
+  <meta property="og:title" content="Strategy · Junto Nova">
+  <meta property="og:description" content="A plan with numbers and next steps you can act on right away.">
   <meta property="og:url" content="https://juntonova.com/strategy">
   <meta property="og:image" content="https://juntonova.com/og-default.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Junto Nova. A stake in the dream.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Build the strategy · Junto Nova">
-  <meta name="twitter:description" content="A plan with numbers, targets, and a clear path to capital or political support, mapped across the continuum from cost-raising to cost-lowering policy.">
+  <meta name="twitter:title" content="Strategy · Junto Nova">
+  <meta name="twitter:description" content="A plan with numbers and next steps you can act on right away.">
   <meta name="twitter:image" content="https://juntonova.com/og-default.png">
 <meta name="robots" content="noindex,nofollow">
 </head>
@@ -243,127 +246,45 @@ html input::placeholder,html textarea::placeholder{color:#64748B;opacity:1}</sty
 
   <main id="main">
     <div class="eyebrow">Service 02</div>
-    <h1 class="display">Build the strategy</h1>
-    <p class="lede">
-      A plan with numbers, targets, and a clear path to capital or political support, mapped across the same continuum the map revealed.
-    </p>
+    <h1 class="display">Strategy</h1>
+    <p class="lede">A plan with numbers and next steps you can act on right away.</p>
 
     <section>
-      <h2 class="display">Most strategies never become real</h2>
-      <p>
-        They stop at vision statements, white papers, or slide decks that list “reform housing” or “expand school choice.” They never answer the only questions that matter:
-      </p>
-      <p>
-        What is the specific cost reduction we are buying (in dollars per household, not abstract percentages)? What public support band actually exists for that reduction? Which political actors can carry it past the next election? Where is capital already flowing or blocked, and what term structure unlocks it? What is the first measurable proof that forces the rest of the continuum to move?
-      </p>
-      <p>
-        A strategy that does not sit on the continuum from cost-raising to cost-lowering policy is just process. We build the other kind.
-      </p>
-    </section>
-
-    <section>
-      <h2 class="display">What we build</h2>
+      <h2 class="display">What you walk away with</h2>
       <div class="four-grid">
         <div class="four-item">
-          <div class="num">01 · TARGET &amp; MATH</div>
-          <h4>The number that has to move</h4>
-          <p>Clear household-level cost targets (rent, tuition, energy, medical, transport, taxes) with baselines, high/low paths, and the delta that constitutes a real win. No vague “affordability.” Actual dollars.</p>
+          <h4>The target</h4>
+          <p>One change, the families who gain and the dollars at stake.</p>
         </div>
         <div class="four-item">
-          <div class="num">02 · SUPPORT BAND</div>
-          <h4>What the public will accept and fight for</h4>
-          <p>Translation of the map’s public-opinion layer into the precise policy window that can stick. Intensity, not just direction. The band that separates theater from durable reform.</p>
+          <h4>The numbers</h4>
+          <p>What the change costs, what families gain and when they see the money.</p>
         </div>
         <div class="four-item">
-          <div class="num">03 · POLITICAL PATH</div>
-          <h4>Who carries it and what they gain</h4>
-          <p>Incentive-aligned sequence of legislative or regulatory moves, whip counts, champion identification, and the minimum coalition that survives the next cycle. Policy that cannot clear an election is not a strategy.</p>
+          <h4>The path</h4>
+          <p>Who has to say yes, in what order, and what each step takes.</p>
         </div>
         <div class="four-item">
-          <div class="num">04 · CAPITAL &amp; DEAL STRUCTURE</div>
-          <h4>The money that makes the model real</h4>
-          <p>Term sheets, vehicle design, funder sequencing, and the proof points capital requires before it commits. Strategy without a funded path is a memo.</p>
-        </div>
-      </div>
-      <div class="four-grid" style="margin-top:16px">
-        <div class="four-item">
-          <div class="num">05 · FIRST PROOF</div>
-          <h4>The smallest win that changes the continuum</h4>
-          <p>The pilot, model, or legislative foothold that demonstrates lower costs and expands ownership. Designed so success forces the next political and capital moves rather than waiting for perfect conditions.</p>
+          <h4>The next steps</h4>
+          <p>What to do this month, with names and dates.</p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2 class="display">How you buy this</h2>
-      <p>
-        Start with the layer that is missing. Single workstreams are priced competitively; the full continuum strategy is the higher-leverage engagement when the map is already in hand or gaps are visible.
-      </p>
-      <div class="menu">
-        <div class="menu-item">
-          <div>
-            <h4>Target &amp; math package</h4>
-            <p>Household cost baselines, reduction targets, and high/low scenario paths for one or more cost drivers.</p>
-          </div>
-          <span class="menu-tag">Single workstream</span>
-        </div>
-        <div class="menu-item">
-          <div>
-            <h4>Support-band package</h4>
-            <p>Public-acceptance window for specific reforms, intensity mapping, and messaging that stays inside the band.</p>
-          </div>
-          <span class="menu-tag">Single workstream</span>
-        </div>
-        <div class="menu-item">
-          <div>
-            <h4>Political path package</h4>
-            <p>Sequence of moves, champion map, incentive analysis, and realistic first legislative or regulatory wins.</p>
-          </div>
-          <span class="menu-tag">Single workstream</span>
-        </div>
-        <div class="menu-item">
-          <div>
-            <h4>Capital structure package</h4>
-            <p>Term design, vehicle options, funder sequencing, and the proof thresholds required for commitment.</p>
-          </div>
-          <span class="menu-tag">Single workstream</span>
-        </div>
-        <div class="menu-item">
-          <div>
-            <h4>First-proof design</h4>
-            <p>Pilot or model architecture that produces measurable cost reduction and ownership expansion on a defined timeline.</p>
-          </div>
-          <span class="menu-tag">Single workstream</span>
-        </div>
-        <div class="menu-item featured">
-          <div>
-            <h4>Full continuum strategy</h4>
-            <p>Integrated plan with numbers, support band, political path, capital structure, and sequenced first proofs. It is a living document, updated as conditions shift.</p>
-          </div>
-          <span class="menu-tag">Recommended</span>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="case">
-        <h3 class="display">Why numbers and the continuum matter</h3>
-        <p>
-          Strategy without targets is aspiration. Targets without a support band and political path are academic. Capital without a clear first proof stays on the sidelines. Most cost-of-living efforts fail because they treat these as sequential afterthoughts instead of a single map.
-        </p>
-        <p style="margin-bottom:0">
-          In housing, for example, pure deregulation often sits outside the current public support band. Status-quo density rules sit deep in the cost-raising zone. The workable strategy only appears when you place both on the continuum, set a concrete household rent/ownership target, identify the political actors who can expand supply inside the band, structure the capital that builds the first units, and design the proof that forces the next jurisdiction to follow. That is the difference between a plan that is discussed and a plan that lowers costs.
-        </p>
-      </div>
+      <h2 class="display">How the work goes</h2>
+      <ol class="steps">
+        <li>We start from what the research shows about your area.</li>
+        <li>We pick the change where the money at stake and the odds are both high.</li>
+        <li>We write the plan with you and stay on call while you act on the plan.</li>
+      </ol>
     </section>
 
     <div class="cta">
-      <h2 class="display" style="margin-bottom:10px">Start with the missing piece</h2>
-      <p>
-        Targets, support band, political path, capital structure, or the full continuum. We will show you how the rest fits before you commit further.
-      </p>
-      <a href="project.html" class="btn">Let's work together</a>
-      <a href="/project" class="btn btn-secondary">Back to services</a>
+      <h2 class="display" style="margin-bottom:10px">Bring us the change you want to make</h2>
+      <p>We will tell you whether a plan is the right next step.</p>
+      <a href="/project" class="btn">Let's work together</a>
+      <a href="/#services" class="btn btn-secondary">Back to services</a>
     </div>
   </main>
 
